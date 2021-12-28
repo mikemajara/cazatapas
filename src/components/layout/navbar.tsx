@@ -323,14 +323,14 @@ const NAV_ITEMS: Array<NavItem> = [
   //     },
   //   ],
   // },
-  // {
-  //   label: "About us",
-  //   href: "#",
-  // },
-  // {
-  //   label: "Subscribe",
-  //   href: "/subscribe",
-  // },
+  {
+    label: "Dishes",
+    href: "/dishes",
+  },
+  {
+    label: "Restaurants",
+    href: "/restaurants",
+  },
 ];
 
 interface MenuItem {

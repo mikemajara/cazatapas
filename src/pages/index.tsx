@@ -30,7 +30,7 @@ import { Main } from "../components/main";
 import { DarkModeSwitch } from "../components/dark-mode-switch";
 import { CTA } from "../components/cta";
 import React, { useEffect, useState } from "react";
-import { MainPageLayout } from "../components/layout";
+import { Layout } from "../components/layout";
 import { CategoryCard } from "../components/cards/category-card";
 import { TagCard } from "../components/cards/tag-card";
 import ProductAddToCart from "../components/cards/offer-card";
@@ -60,7 +60,7 @@ const Index = () => {
   }, [categories]);
 
   return (
-    <MainPageLayout>
+    <Layout>
       <Container my={10} maxW="container.lg">
         <Stack>
           <Container maxW="container.md">
@@ -136,7 +136,7 @@ const Index = () => {
           </Grid>
         </Stack>
       </Container>
-    </MainPageLayout>
+    </Layout>
   );
 };
 

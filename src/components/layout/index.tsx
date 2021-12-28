@@ -5,7 +5,7 @@ import Navbar from "./navbar";
 import Sidebar from "./sidebar";
 import Footer from "./footer";
 
-export function MainPageLayout(props) {
+export function Layout(props) {
   return (
     <Box>
       <Head>
@@ -18,17 +18,3 @@ export function MainPageLayout(props) {
     </Box>
   );
 }
-
-// export function DashboardLayout(props) {
-//   return (
-//     <Box>
-//       <Head><title>{props.title}</title></Head>
-//       {/* <Navbar/> */}
-//       <Sidebar>
-//         {props.children}
-//       </Sidebar>
-
-//       <Footer/>
-//     </Box>
-//   )
-// }

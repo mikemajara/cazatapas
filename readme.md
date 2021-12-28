@@ -1,18 +1,18 @@
-# ofertas-front
+# rateplate
 
 # install & run
 
 **Clone repo**
 ```
 git clone https://github.com/mikemajara/rateplate
-cd ofertas-front
+cd rateplate
 yarn install #install dependencies
 ```
 
 **Run backend**
-Make sure [ofertas-back](https://github.com/mikemajara/rateplate) is running with a valid PostgreSQL endpoint available.
+Make sure `backend` is running with a valid PostgreSQL endpoint available.
 ```shell
-cd rateplate
+cd backend
 docker-compose up
 ```
 
