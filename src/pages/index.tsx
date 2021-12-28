@@ -77,9 +77,9 @@ const Index = () => {
       <Stack
         direction={["column", "row-reverse"]}
         justify="space-between"
-        // style={{
-        //   minHeight: `calc(100vh - ${navbarAndFooterHeight}px)`,
-        // }}
+        style={{
+          minHeight: `calc(100vh - ${navbarAndFooterHeight}px)`,
+        }}
       >
         <Image
           w={["100%", "50%"]}
