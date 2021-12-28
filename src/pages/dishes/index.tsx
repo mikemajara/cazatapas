@@ -1,3 +1,4 @@
+import { AddIcon } from "@chakra-ui/icons";
 import {
   Button,
   Container,
@@ -11,6 +12,7 @@ import {
 } from "@chakra-ui/react";
 import { DishCard } from "@components/cards/dish-card";
 import { Layout } from "@components/layout";
+import { ModalAddDish } from "@components/modals/add-dish";
 import { MagnifyingGlass } from "phosphor-react";
 import React from "react";
 
@@ -46,6 +48,22 @@ export default function Dishes() {
             <DishCard />
             <DishCard />
           </SimpleGrid>
+          <ModalAddDish
+            button={
+              <Button
+                position="fixed"
+                bottom="10"
+                right="10"
+                variant="outline"
+                border="1px solid"
+                borderColor="black"
+                leftIcon={<AddIcon fontSize="xs" />}
+                style={{ boxShadow: "4px 4px 0px #000000" }}
+              >
+                Add dish
+              </Button>
+            }
+          />
         </Stack>
       </Container>
     </Layout>

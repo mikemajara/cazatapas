@@ -1,23 +1,40 @@
-import { HStack } from "@chakra-ui/react";
+import { Button, HStack } from "@chakra-ui/react";
 import { Star } from "phosphor-react";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 export const RatingComponent = (props) => {
-  const { rating } = props;
+  const [value, setValue] = useState(0);
+  const { rating = 0, isEditable = false } = props;
   const starCount = Math.round(rating);
+  useEffect(() => {
+    if (starCount) {
+      setValue(starCount);
+    }
+  }, [rating]);
   const starSize = 22;
+  const starArray = Array(value)
+    .fill(1)
+    .concat(Array(5 - value).fill(0));
   return (
     <HStack>
-      {Array(starCount)
-        .fill(0)
-        .map((e) => (
-          <Star size={starSize} weight="fill" />
+      <HStack>
+        {starArray.map((e, i) => (
+          <Star
+            size={starSize}
+            weight={e ? "fill" : "regular"}
+            key={i}
+            onClick={() => {
+              setValue(i + 1);
+            }}
+            cursor="pointer"
+          />
         ))}
-      {Array(5 - starCount)
-        .fill(0)
-        .map((e) => (
-          <Star size={starSize} />
-        ))}
+      </HStack>
+      {isEditable && (
+        <Button size="xs" onClick={() => setValue(0)}>
+          Clear
+        </Button>
+      )}
     </HStack>
   );
 };
