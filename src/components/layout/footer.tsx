@@ -12,6 +12,7 @@ import {
   HStack,
   useBreakpoint,
   Icon,
+  useBreakpointValue,
 } from "@chakra-ui/react";
 // icons
 import { FaInstagram, FaTwitter, FaYoutube } from "react-icons/fa";
@@ -72,7 +73,8 @@ const SocialButton = ({
 };
 
 export function Footer() {
-  const isDesktop = useBreakpoint("sm");
+  const isDesktop = useBreakpointValue({ base: false, sm: true });
+
   return (
     <Stack
       h={`${isDesktop ? footerHeight : footerHeightBase}px`}

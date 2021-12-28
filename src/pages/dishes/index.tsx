@@ -4,11 +4,14 @@ import {
   Container,
   Heading,
   HStack,
+  IconButton,
   Input,
   InputGroup,
   InputRightElement,
   SimpleGrid,
   Stack,
+  useBreakpoint,
+  useBreakpointValue,
 } from "@chakra-ui/react";
 import { DishCard } from "@components/cards/dish-card";
 import { Layout } from "@components/layout";
@@ -17,6 +20,8 @@ import { MagnifyingGlass } from "phosphor-react";
 import React from "react";
 
 export default function Dishes() {
+  const isMobile = useBreakpointValue({ base: true, sm: false });
+  const IconComponent = isMobile ? IconButton : Button;
   return (
     <Layout>
       <Container p={10} maxW="container.xl">
@@ -50,18 +55,19 @@ export default function Dishes() {
           </SimpleGrid>
           <ModalAddDish
             button={
-              <Button
+              <IconComponent
+                aria-label="add"
                 position="fixed"
-                bottom="10"
-                right="10"
+                bottom={["44"]}
+                right={["5", "10"]}
                 variant="outline"
                 border="1px solid"
                 borderColor="black"
-                leftIcon={<AddIcon fontSize="xs" />}
+                icon={isMobile && <AddIcon fontSize="xs" />}
+                leftIcon={!isMobile && <AddIcon fontSize="xs" />}
                 style={{ boxShadow: "4px 4px 0px #000000" }}
-              >
-                Add dish
-              </Button>
+                children={!isMobile && "Add dish"}
+              />
             }
           />
         </Stack>
