@@ -7,8 +7,14 @@ import {
   Flex,
   HStack,
   Text,
+  useBreakpoint,
 } from "@chakra-ui/react";
 import { Layout } from "@components/layout";
+import {
+  footerHeight,
+  footerHeightBase,
+} from "@components/layout/footer";
+import { navbarHeight } from "@components/layout/navbar";
 import { RatingComponent } from "@components/rating-component";
 import _ from "lodash";
 import { useRouter } from "next/router";
@@ -51,10 +57,18 @@ export default function Dish(props) {
   // const router = useRouter();
   // const { id } = router.query;
   const { id, name, rating, votes, tags, image, opinions } = mock;
-
+  const isDesktop = useBreakpoint("sm");
+  const navbarAndFooterHeight =
+    navbarHeight + (isDesktop ? footerHeight : footerHeightBase);
   return (
     <Layout>
-      <Container p={10} maxW="container.xl">
+      <Container
+        p={10}
+        maxW="container.xl"
+        style={{
+          minHeight: `calc(100vh - ${navbarAndFooterHeight}px)`,
+        }}
+      >
         <Stack>
           <Heading>{name}</Heading>
           <Stack direction={["column", "row"]} spacing={10}>

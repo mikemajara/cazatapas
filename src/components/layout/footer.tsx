@@ -75,7 +75,7 @@ export function Footer() {
   const isDesktop = useBreakpoint("sm");
   return (
     <Stack
-      h={`${!isDesktop ? footerHeight : footerHeightBase}px`}
+      h={`${isDesktop ? footerHeight : footerHeightBase}px`}
       py={4}
       border="1px solid"
       borderColor="gray.300"
