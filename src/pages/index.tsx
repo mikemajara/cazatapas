@@ -45,6 +45,7 @@ import {
   footerHeight,
   footerHeightBase,
 } from "@components/layout/footer";
+import { ModalAddDish } from "@components/modals/add-dish";
 
 const Index = () => {
   const [categories, setCategories] = useState([]);
@@ -118,13 +119,17 @@ const Index = () => {
             </InputGroup>
           </Stack>
           <Box>
-            <Button
-              colorScheme="orange"
-              size="md"
-              leftIcon={<Star />}
-            >
-              Rate a dish!
-            </Button>
+            <ModalAddDish
+              button={
+                <Button
+                  colorScheme="orange"
+                  size="md"
+                  leftIcon={<Star />}
+                >
+                  Rate a dish!
+                </Button>
+              }
+            />
           </Box>
         </Stack>
       </Stack>
