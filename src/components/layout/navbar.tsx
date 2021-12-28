@@ -47,6 +47,8 @@ import { useRouter } from "next/dist/client/router";
 import { getSession, useSession } from "next-auth/react";
 import AccountComponent from "../auth/account-component";
 
+export const navbarHeight = 60;
+
 export default function WithSubnavigation(props: any) {
   const { data: session, status } = useSession();
   const { isOpen, onToggle } = useDisclosure();
@@ -58,7 +60,7 @@ export default function WithSubnavigation(props: any) {
       <Flex
         bg={useColorModeValue("white", "gray.800")}
         color={useColorModeValue("gray.600", "white")}
-        minH={"60px"}
+        h={`${navbarHeight}px`}
         py={{ base: 2 }}
         px={{ base: 4 }}
         borderBottom={1}

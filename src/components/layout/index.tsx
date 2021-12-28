@@ -3,7 +3,7 @@ import { Box } from "@chakra-ui/react";
 import Head from "next/head";
 import Navbar from "./navbar";
 import Sidebar from "./sidebar";
-import Footer from "./footer";
+import { Footer } from "./footer";
 
 export function Layout(props) {
   return (

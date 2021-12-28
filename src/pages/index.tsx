@@ -17,6 +17,9 @@ import {
   InputLeftElement,
   InputRightElement,
   HStack,
+  Heading,
+  Image,
+  useBreakpoint,
 } from "@chakra-ui/react";
 import {
   CheckCircleIcon,
@@ -34,11 +37,21 @@ import { Layout } from "../components/layout";
 import { CategoryCard } from "../components/cards/category-card";
 import { TagCard } from "../components/cards/tag-card";
 import ProductAddToCart from "../components/cards/offer-card";
+import { BsShop } from "react-icons/bs";
+import { RiRestaurant2Fill } from "react-icons/ri";
+import { Star } from "phosphor-react";
+import { navbarHeight } from "@components/layout/navbar";
+import {
+  footerHeight,
+  footerHeightBase,
+} from "@components/layout/footer";
 
 const Index = () => {
   const [categories, setCategories] = useState([]);
   const [tags, setTags] = useState([]);
-
+  const isDesktop = useBreakpoint("sm");
+  const navbarAndFooterHeight =
+    navbarHeight + (isDesktop ? footerHeight : footerHeightBase);
   const toggleSelectedCategories = (category: string) => {
     if (categories.includes(category)) {
       setCategories([...categories.filter((e) => e !== category)]);
@@ -61,81 +74,61 @@ const Index = () => {
 
   return (
     <Layout>
-      <Container my={10} maxW="container.lg">
-        <Stack>
-          <Container maxW="container.md">
-            <Stack>
-              <InputGroup>
-                <InputRightElement
-                  pointerEvents="none"
-                  zIndex={0}
-                  children={<SearchIcon color="gray.300" />}
-                />
-                <Input
-                  placeholder="Category | Tag | Product name"
-                  borderRadius="full"
-                />
-              </InputGroup>
-              <HStack id="categories">
-                {["Clothes", "Technology", "Food", "Books"].map(
-                  (category) => (
-                    <Box
-                      onClick={() =>
-                        toggleSelectedCategories(category)
-                      }
-                      cursor="pointer"
-                    >
-                      <CategoryCard
-                        label={category}
-                        isSelected={categories.includes(category)}
-                      />
-                    </Box>
-                  ),
-                )}
-              </HStack>
-              <HStack id="tags">
-                {["umbrellas", "tablets", "burgers", "politics"].map(
-                  (tag) => (
-                    <Box
-                      onClick={() => toggleSelectedTags(tag)}
-                      cursor="pointer"
-                    >
-                      <TagCard
-                        label={tag}
-                        isSelected={tags.includes(tag)}
-                      />
-                    </Box>
-                  ),
-                )}
-              </HStack>
-            </Stack>
-          </Container>
-          <Grid id="articles" pt={16}>
-            <Grid
-              w="full"
-              h="full"
-              gridTemplateColumns="repeat(auto-fit, minmax(150px,1fr))"
-              columnGap="15px"
-              rowGap="15px"
+      <Stack
+        direction={["column", "row-reverse"]}
+        justify="space-between"
+        style={{
+          minHeight: `calc(100vh - ${navbarAndFooterHeight}px)`,
+        }}
+      >
+        <Image
+          w={["100%", "50%"]}
+          // h={[200]}
+          fit={"cover"}
+          src={`images/tortilla-patatas.jpg`}
+        />
+        <Stack spacing={20} p={10} w={["100%", "50%"]}>
+          <Stack>
+            <Heading fontSize="6xl">Hunting for</Heading>
+            <Heading
+              bgGradient="linear(to-b, orange.300, red.300)"
+              bgClip="text"
+              fontSize="6xl"
+              fontWeight="extrabold"
             >
-              {Array(9)
-                .fill(0)
-                .map((e) => (
-                  <Box
-                    p={3}
-                    boxSize="150px"
-                    border="1px solid"
-                    borderColor="gray.300"
-                    align="center"
-                    borderRadius="xl"
-                  >
-                    Product
-                  </Box>
-                ))}
-            </Grid>
-          </Grid>
+              the best dishes
+            </Heading>
+            <Heading fontSize="6xl">out there</Heading>
+          </Stack>
+          <Stack direction={["column", "row"]} spacing={10}>
+            <InputGroup maxW={330}>
+              <Input placeholder="Restaurant" />
+              <InputLeftElement
+                pointerEvents="none"
+                color="gray.400"
+                children={<BsShop />}
+              />
+            </InputGroup>
+            <InputGroup maxW={330}>
+              <Input placeholder="Dish" />
+              <InputLeftElement
+                pointerEvents="none"
+                color="gray.400"
+                children={<RiRestaurant2Fill />}
+              />
+            </InputGroup>
+          </Stack>
+          <Box>
+            <Button
+              colorScheme="orange"
+              size="md"
+              leftIcon={<Star />}
+            >
+              Rate a dish!
+            </Button>
+          </Box>
         </Stack>
-      </Container>
+      </Stack>
     </Layout>
   );
 };
