@@ -1,0 +1,174 @@
+{
+	"info": {
+		"_postman_id": "31d42ed0-41a0-4772-826c-33208b20c6e1",
+		"name": "ofertas",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "products",
+			"item": [
+				{
+					"name": "api/products",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "QexZ+nDWJGZ3gWMS2d71",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "miguel.alcalde@fivetran.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}:{{port}}/api/products",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"products"
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": null,
+									"description": "search term for name field",
+									"disabled": true
+								},
+								{
+									"key": "orderBy",
+									"value": null,
+									"description": "Item key by which to order",
+									"disabled": true
+								},
+								{
+									"key": "sortOrder",
+									"value": null,
+									"description": "\"asc\" OR \"desc\"",
+									"disabled": true
+								},
+								{
+									"key": "pageSize",
+									"value": "2",
+									"description": "Page size to retrieve batch of products",
+									"disabled": true
+								},
+								{
+									"key": "pageNumber",
+									"value": "4",
+									"description": "Page number to set batch offset",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "api/products/:id",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "QexZ+nDWJGZ3gWMS2d71",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "miguel.alcalde@fivetran.com",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}:{{port}}/api/products/9",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"products",
+								"9"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "api/products/:id",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{apiKey}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{username}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"raw_name\": \"Top ofertas del día en AliExpresssssss\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}:{{port}}/api/products/9",
+							"host": [
+								"{{host}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"products",
+								"9"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "users",
+			"item": []
+		},
+		{
+			"name": "api/users/me",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": ""
+				}
+			},
+			"response": []
+		}
+	]
+}
