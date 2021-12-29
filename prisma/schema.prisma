@@ -51,6 +51,8 @@ model User {
   settingsId    String?
   salt          String?
   apiKey        String?
+  Rating        Rating[]
+  Comment       Comment[]
 }
 
 model Settings {
@@ -78,6 +80,8 @@ model Dish {
   createdAt    DateTime?   @default(now())
   updatedAt    DateTime?   @updatedAt
   tags         Tag[]
+  ratings      Rating[]
+  comments     Comment[]
 }
 
 model Restaurant {
@@ -104,4 +108,22 @@ model Image {
   restaurant   Restaurant? @relation(fields: [restaurantId], references: [id])
   dishId       Int?
   restaurantId Int?
+}
+
+model Rating {
+  id     String @id @default(cuid())
+  user   User   @relation(fields: [userId], references: [id])
+  value  Float  @default(0)
+  userId String
+  Dish   Dish?  @relation(fields: [dishId], references: [id])
+  dishId Int?
+}
+
+model Comment {
+  id     String  @id @default(cuid())
+  user   User    @relation(fields: [userId], references: [id])
+  text   String?
+  userId String
+  Dish   Dish?   @relation(fields: [dishId], references: [id])
+  dishId Int?
 }

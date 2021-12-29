@@ -36,7 +36,7 @@ export default async function handle(
   }
 }
 
-// GET /api/dishes/:id?
+// GET /api/restaurants/:id?
 async function handleGET(
   id,
   req: NextApiRequest,
@@ -44,15 +44,14 @@ async function handleGET(
 ) {
   const defaultInclude = {
     images: true,
-    tags: true,
   };
   if (id) {
-    const dishId = parseInt(id);
-    const dish = await prisma.dish.findUnique({
-      where: { id: dishId },
-      include: { ...defaultInclude, ratings: true, comments: true },
+    const restaurantId = parseInt(id);
+    const restaurant = await prisma.restaurant.findUnique({
+      where: { id: restaurantId },
+      include: { ...defaultInclude, dishes: true },
     });
-    res.json(dish);
+    res.json(restaurant);
   } else {
     const {
       search,
@@ -64,7 +63,7 @@ async function handleGET(
     const pSize = parseInt(pageSize as string);
     const pNumber = parseInt(pageNumber as string);
 
-    const dishes = await prisma.dish.findMany({
+    const restaurants = await prisma.restaurant.findMany({
       where: search
         ? {
             OR: [
@@ -84,34 +83,34 @@ async function handleGET(
       take: pSize ? pSize : undefined,
       include: defaultInclude,
     });
-    res.json(dishes);
+    res.json(restaurants);
   }
 }
 
-// POST /api/dishes/:id?
+// POST /api/restaurants/:id?
 async function handlePOST(id, req, res) {
   if (id) {
-    const dishId = parseInt(id);
-    const dish = await prisma.dish.update({
-      where: { id: dishId },
+    const restaurantId = parseInt(id);
+    const restaurant = await prisma.restaurant.update({
+      where: { id: restaurantId },
       data: { ...req.body },
       include: { tags: true },
     });
-    res.json(dish);
+    res.json(restaurant);
   } else {
-    const dish = await prisma.dish.create({
+    const restaurant = await prisma.restaurant.create({
       data: { ...req.body },
       include: { tags: true },
     });
-    res.json(dish);
+    res.json(restaurant);
   }
 }
 
-// DELETE /api/dishes/:id
+// DELETE /api/restaurants/:id
 async function handleDELETE(id, req, res) {
-  const dish = await prisma.dish.delete({
+  const restaurant = await prisma.restaurant.delete({
     where: { id },
     include: { tags: true },
   });
-  res.json(dish);
+  res.json(restaurant);
 }
