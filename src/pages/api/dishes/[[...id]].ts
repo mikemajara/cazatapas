@@ -3,29 +3,23 @@ import prisma from "@lib/prisma";
 import { getSession } from "next-auth/react";
 import { logger } from "@lib/logger";
 import base64 from "crypto-js/enc-base64";
-import { getEmailAndApiKeyFromHeader } from "@lib/auth/api-key";
+import {
+  getEmailAndApiKeyFromHeader,
+  isUserAuthorizedWithApiKey,
+} from "@lib/auth/api-key";
 
 export default async function handle(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
   // authorization
-  const session = await getSession({ req });
-  if (!session) {
-    const { user } = getEmailAndApiKeyFromHeader(req);
-    if (!user) {
-      res.status(401).end();
-    }
-    const dbUser = await prisma.user.findUnique({
-      where: { email: user.email },
-    });
-    if (
-      user.email !== dbUser.email ||
-      user.apiKey !== dbUser.apiKey
-    ) {
-      res.status(401).end();
-    }
-  }
+  // const session = await getSession({ req });
+  // if (!session) {
+  //   const isAuthorized = await isUserAuthorizedWithApiKey(req);
+  //   if (!isAuthorized) {
+  //     res.status(401).end();
+  //   }
+  // }
   const id = req.query.id;
   if (req.method === "GET") {
     await handleGET(id, req, res);
@@ -42,18 +36,18 @@ export default async function handle(
   }
 }
 
-// GET /api/products/:id?
+// GET /api/dishes/:id?
 async function handleGET(
   id,
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
   if (id) {
-    const productId = parseInt(id);
-    const product = await prisma.product.findUnique({
-      where: { id: productId },
+    const dishId = parseInt(id);
+    const dish = await prisma.dish.findUnique({
+      where: { id: dishId },
     });
-    res.json(product);
+    res.json(dish);
   } else {
     const {
       search,
@@ -65,10 +59,17 @@ async function handleGET(
     const pSize = parseInt(pageSize as string);
     const pNumber = parseInt(pageNumber as string);
 
-    const products = await prisma.product.findMany({
+    const dishes = await prisma.dish.findMany({
       where: search
         ? {
-            OR: [{ raw_name: { contains: search as string } }],
+            OR: [
+              {
+                name: {
+                  contains: search as string,
+                  mode: "insensitive",
+                },
+              },
+            ],
           }
         : undefined,
       orderBy: orderBy
@@ -77,31 +78,31 @@ async function handleGET(
       skip: pSize && pNumber ? pSize * (pNumber - 1) : undefined,
       take: pSize ? pSize : undefined,
     });
-    res.json(products);
+    res.json(dishes);
   }
 }
 
-// POST /api/products/:id?
+// POST /api/dishes/:id?
 async function handlePOST(id, req, res) {
   if (id) {
-    const productId = parseInt(id);
-    const product = await prisma.product.update({
-      where: { id: productId },
+    const dishId = parseInt(id);
+    const dish = await prisma.dish.update({
+      where: { id: dishId },
       data: { ...req.body },
     });
-    res.json(product);
+    res.json(dish);
   } else {
-    const product = await prisma.product.create({
+    const dish = await prisma.dish.create({
       data: { ...req.body },
     });
-    res.json(product);
+    res.json(dish);
   }
 }
 
-// DELETE /api/products/:id
+// DELETE /api/dishes/:id
 async function handleDELETE(id, req, res) {
-  const product = await prisma.product.delete({
+  const dish = await prisma.dish.delete({
     where: { id },
   });
-  res.json(product);
+  res.json(dish);
 }

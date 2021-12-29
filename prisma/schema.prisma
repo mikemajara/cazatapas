@@ -78,8 +78,6 @@ model Dish {
   createdAt    DateTime?   @default(now())
   updatedAt    DateTime?   @updatedAt
   tags         Tag[]
-  brand        String?
-
 }
 
 model Restaurant {
