@@ -13,13 +13,13 @@ export default async function handle(
   res: NextApiResponse,
 ) {
   // authorization
-  // const session = await getSession({ req });
-  // if (!session) {
-  //   const isAuthorized = await isUserAuthorizedWithApiKey(req);
-  //   if (!isAuthorized) {
-  //     res.status(401).end();
-  //   }
-  // }
+  const session = await getSession({ req });
+  if (!session) {
+    const isAuthorized = await isUserAuthorizedWithApiKey(req);
+    if (!isAuthorized) {
+      res.status(401).end();
+    }
+  }
   const id = req.query.id;
   if (req.method === "GET") {
     await handleGET(id, req, res);
