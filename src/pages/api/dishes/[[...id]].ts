@@ -42,10 +42,14 @@ async function handleGET(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
+  const include = {
+    tags: true,
+  };
   if (id) {
     const dishId = parseInt(id);
     const dish = await prisma.dish.findUnique({
       where: { id: dishId },
+      include,
     });
     res.json(dish);
   } else {
@@ -77,6 +81,7 @@ async function handleGET(
         : undefined,
       skip: pSize && pNumber ? pSize * (pNumber - 1) : undefined,
       take: pSize ? pSize : undefined,
+      include,
     });
     res.json(dishes);
   }
@@ -89,11 +94,13 @@ async function handlePOST(id, req, res) {
     const dish = await prisma.dish.update({
       where: { id: dishId },
       data: { ...req.body },
+      include: { tags: true },
     });
     res.json(dish);
   } else {
     const dish = await prisma.dish.create({
       data: { ...req.body },
+      include: { tags: true },
     });
     res.json(dish);
   }
@@ -103,6 +110,7 @@ async function handlePOST(id, req, res) {
 async function handleDELETE(id, req, res) {
   const dish = await prisma.dish.delete({
     where: { id },
+    include: { tags: true },
   });
   res.json(dish);
 }
