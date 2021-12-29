@@ -46,7 +46,7 @@ const restaurantData: Prisma.RestaurantCreateInput[] = [
     images: {
       create: {
         name: "la-tapeopteca",
-        fileName: "/restaurants/la-tapeoteca.png",
+        fileName: "la-tapeoteca.png",
       },
     },
   },
@@ -55,7 +55,7 @@ const restaurantData: Prisma.RestaurantCreateInput[] = [
     images: {
       create: {
         name: "los-zagales",
-        fileName: "/restaurants/los-zagales.png",
+        fileName: "los-zagales.png",
       },
     },
   },

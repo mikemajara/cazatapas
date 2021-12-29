@@ -46,6 +46,7 @@ import {
   footerHeightBase,
 } from "@components/layout/footer";
 import { ModalAddDish } from "@components/modals/add-dish";
+import { SelectAsyncRestaurant } from "@components/select/async-select-restaurant";
 
 const Index = () => {
   const [categories, setCategories] = useState([]);
@@ -101,14 +102,11 @@ const Index = () => {
             <Heading fontSize="6xl">out there</Heading>
           </Stack>
           <Stack direction={["column", "row"]} spacing={10}>
-            <InputGroup maxW={330}>
-              <Input placeholder="Restaurant" />
-              <InputLeftElement
-                pointerEvents="none"
-                color="gray.400"
-                children={<BsShop />}
-              />
-            </InputGroup>
+            {/* <InputGroup> */}
+            <SelectAsyncRestaurant placeholder="Restaurant" />
+            {/* </InputGroup> */}
+            {/* <InputGroup maxW={330}>
+            </InputGroup> */}
             <InputGroup maxW={330}>
               <Input placeholder="Dish" />
               <InputLeftElement
