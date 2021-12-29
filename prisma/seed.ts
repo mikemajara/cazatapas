@@ -9,6 +9,18 @@ const userData: Prisma.UserCreateInput[] = [
     password:
       "2bd806c97f0e00af1a1fc3328fa763a9269723c8db8fac4f93af71db186d6e90",
   },
+  {
+    name: "Bob",
+    email: "bob@rateplate.io",
+    password:
+      "2bd806c97f0e00af1a1fc3328fa763a9269723c8db8fac4f93af71db186d6e90",
+  },
+  {
+    name: "Conal",
+    email: "conal@rateplate.io",
+    password:
+      "2bd806c97f0e00af1a1fc3328fa763a9269723c8db8fac4f93af71db186d6e90",
+  },
 ];
 
 const tagData: Prisma.TagCreateInput[] = [
@@ -34,7 +46,7 @@ const restaurantData: Prisma.RestaurantCreateInput[] = [
     images: {
       create: {
         name: "la-tapeopteca",
-        location: "/restaurants/la-tapeoteca.png",
+        fileName: "/restaurants/la-tapeoteca.png",
       },
     },
   },
@@ -43,7 +55,7 @@ const restaurantData: Prisma.RestaurantCreateInput[] = [
     images: {
       create: {
         name: "los-zagales",
-        location: "/restaurants/los-zagales.png",
+        fileName: "/restaurants/los-zagales.png",
       },
     },
   },
@@ -54,6 +66,12 @@ const dishData: Prisma.DishCreateInput[] = [
     name: "Marinera negra con gulas al ajillo",
     price: 2.2,
     restaurant: { connect: { name: "La Tapeoteca" } },
+    images: {
+      create: {
+        name: "marinera-negra.jpg",
+        fileName: "marinera-negra.jpg",
+      },
+    },
     tags: {
       connect: [
         { id: "soy" },
@@ -63,11 +81,41 @@ const dishData: Prisma.DishCreateInput[] = [
         { id: "dioxide" },
       ],
     },
+    ratings: {
+      create: [
+        {
+          user: { connect: { email: "alice@rateplate.io" } },
+          value: 3,
+        },
+        {
+          user: { connect: { email: "bob@rateplate.io" } },
+          value: 4,
+        },
+        {
+          user: { connect: { email: "conal@rateplate.io" } },
+          value: 2,
+        },
+      ],
+    },
+    comments: {
+      create: [
+        {
+          user: { connect: { email: "alice@rateplate.io" } },
+          text: "Cillum ad sunt do voluptate, minim deserunt nostrud amet velit.",
+        },
+      ],
+    },
   },
   {
     name: "Croqueta cremosa de jamón ibérico",
     price: 2.2,
     restaurant: { connect: { name: "La Tapeoteca" } },
+    images: {
+      create: {
+        name: "croqueta-jamon.jpg",
+        fileName: "croqueta-jamon.jpg",
+      },
+    },
     tags: {
       connect: [
         { id: "dairy" },
@@ -81,6 +129,12 @@ const dishData: Prisma.DishCreateInput[] = [
     name: "Pincho moruno de atún",
     price: 4.5,
     restaurant: { connect: { name: "La Tapeoteca" } },
+    images: {
+      create: {
+        name: "pincho-moruno-atun.jpg",
+        fileName: "pincho-moruno-atun.jpg",
+      },
+    },
     tags: {
       connect: [
         { id: "fish" },

@@ -44,12 +44,15 @@ async function handleGET(
 ) {
   const defaultInclude = {
     images: true,
+    dishes: { include: { ratings: true } },
   };
   if (id) {
     const restaurantId = parseInt(id);
     const restaurant = await prisma.restaurant.findUnique({
       where: { id: restaurantId },
-      include: { ...defaultInclude, dishes: true },
+      include: {
+        ...defaultInclude,
+      },
     });
     res.json(restaurant);
   } else {

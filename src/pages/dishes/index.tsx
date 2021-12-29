@@ -17,9 +17,11 @@ import {
 import { DishCard } from "@components/cards/dish-card";
 import { Layout } from "@components/layout";
 import { ModalAddDish } from "@components/modals/add-dish";
+import { logger } from "@lib/logger";
 import { MagnifyingGlass } from "phosphor-react";
 import React from "react";
 import { useAllDishes } from "src/hooks/useAllDishes";
+import { DishInclude } from "prisma/model";
 
 export default function Dishes() {
   const isMobile = useBreakpointValue({ base: true, sm: false });
@@ -49,18 +51,7 @@ export default function Dishes() {
           >
             {isLoading
               ? "Loading..."
-              : // <Code w="full">
-                //   <pre>{JSON.stringify(dishes, null, 2)}</pre>
-                // </Code>
-                dishes.map((e) => <DishCard {...e} />)}
-            {/* <DishCard />
-            <DishCard />
-            <DishCard />
-            <DishCard />
-            <DishCard />
-            <DishCard />
-            <DishCard />
-            <DishCard /> */}
+              : dishes.map((e) => <DishCard {...e} />)}
           </SimpleGrid>
           <ModalAddDish
             button={

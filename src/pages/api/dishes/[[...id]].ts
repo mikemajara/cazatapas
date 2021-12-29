@@ -44,7 +44,7 @@ async function handleGET(
 ) {
   const defaultInclude = {
     images: true,
-    tags: true,
+    ratings: true,
   };
   if (id) {
     const dishId = parseInt(id);

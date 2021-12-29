@@ -2,13 +2,13 @@ import React, { useEffect, useState } from "react";
 import { Dish } from "@prisma/client";
 import { useQuery } from "react-query";
 import ky from "ky";
-import { DishInclude } from "prisma/model";
+import { RestaurantInclude } from "prisma/model";
 
-export const useAllDishes = () => {
-  const [result, setResult] = useState<DishInclude[]>([]);
-  const { data, isLoading, error } = useQuery<DishInclude[]>(
+export const useAllRestaurants = () => {
+  const [result, setResult] = useState<RestaurantInclude[]>([]);
+  const { data, isLoading, error } = useQuery<RestaurantInclude[]>(
     "/api/dishes",
-    () => ky.get("/api/dishes").json(),
+    () => ky.get("/api/restaurants").json(),
     { onSuccess: (data) => setResult(data) },
   );
   return { data: result, isLoading, error };

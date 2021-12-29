@@ -13,20 +13,23 @@ import humanNumber from "human-number";
 import { humanize } from "@lib/rounding";
 import _ from "lodash";
 import next from "next";
+import { RestaurantInclude } from "prisma/model";
 
 const IMAGE_LOCATION = "/images";
 
-const mock = {
-  id: 4,
-  name: "Restaurante las anas",
-  votes: 100400,
-  rating: 3.2,
-  tags: ["vegan", "vegetarian", "gluten-free"],
-  images: ["los-navarros.png", "las-anas.png"],
-};
+export const RestaurantCard = (props: RestaurantInclude) => {
+  const { id, name, dishes, images } = props;
+  const ratingCount = dishes.reduce(
+    (e, f) => e + f.ratings.length,
+    0,
+  );
+  const totalRating = dishes.reduce(
+    (e, f) => e + f.ratings.reduce((v, r) => v + r.value, 0),
+    0,
+  );
+  const averageRating =
+    Math.round((totalRating / ratingCount) * 100) / 100 || 0;
 
-export const RestaurantCard = () => {
-  const { id, name, rating, tags, images, votes } = mock;
   return (
     <Box w="220" h="300">
       <VStack align={"flex-start"}>
@@ -35,19 +38,21 @@ export const RestaurantCard = () => {
             as={Image}
             boxSize={220}
             fit={"cover"}
-            src={`${IMAGE_LOCATION}/${_.sample(images)}`}
+            src={`${IMAGE_LOCATION}${images?.[0].fileName}`}
             borderRadius={"md"}
+            border=".25px solid"
+            borderColor="gray.900"
             boxShadow="4px 4px 0px #000000"
           />
         </NextLink>
         <Text fontWeight={"bold"}>{name}</Text>
         <HStack>
           <HStack>
-            <Hash /> <Text>{humanize(votes)}</Text>
+            <Hash /> <Text>{humanize(ratingCount)}</Text>
           </HStack>
           <HStack>
             <Star />
-            <Text>{rating}</Text>
+            <Text>{averageRating}</Text>
           </HStack>
         </HStack>
       </VStack>

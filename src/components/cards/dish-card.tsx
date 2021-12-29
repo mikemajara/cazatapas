@@ -11,20 +11,14 @@ import { RatingComponent } from "@components/rating-component";
 import NextLink from "next/link";
 import { Dish, DishInclude } from "prisma/model";
 import _ from "lodash";
+import { logger } from "@lib/logger";
 
 const IMAGE_LOCATION = "/images/dishes";
-
-const mock = {
-  id: 4,
-  name: "Tortilla de patatas",
-  rating: 3.2,
-  tags: ["vegan", "vegetarian", "gluten-free"],
-  image: "tortilla-patatas.jpg",
-};
 
 export const DishCard = (props: DishInclude) => {
   const { id, name, ratings, tags, images } = props;
   const averageRating = _.mean(ratings?.map((r) => r.value));
+  logger.debug(averageRating);
   return (
     <Box w="220" h="300">
       <VStack align={"flex-start"}>
@@ -33,7 +27,7 @@ export const DishCard = (props: DishInclude) => {
             as={Image}
             boxSize={220}
             fit={"cover"}
-            src={`${IMAGE_LOCATION}/${images?.[0]?.location}`}
+            src={`${IMAGE_LOCATION}/${images?.[0]?.fileName}`}
             borderRadius={"md"}
             boxShadow="4px 4px 0px #000000"
           />

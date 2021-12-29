@@ -14,10 +14,13 @@ import { RestaurantCard } from "@components/cards/restaurant-card";
 import { Layout } from "@components/layout";
 import { ModalAddRestaurant } from "@components/modals/add-restaurant";
 import React from "react";
+import { useAllRestaurants } from "src/hooks/useAllRestaurants";
 
 export default function Dishes() {
   const isMobile = useBreakpointValue({ base: true, sm: false });
   const IconComponent = isMobile ? IconButton : Button;
+  const { data: restaurants, isLoading, error } = useAllRestaurants();
+
   return (
     <Layout>
       <Container p={10} maxW="container.xl">
@@ -28,14 +31,9 @@ export default function Dishes() {
             justifyItems="center"
             rowGap={20}
           >
-            <RestaurantCard />
-            <RestaurantCard />
-            <RestaurantCard />
-            <RestaurantCard />
-            <RestaurantCard />
-            <RestaurantCard />
-            <RestaurantCard />
-            <RestaurantCard />
+            {isLoading
+              ? "Loading..."
+              : restaurants.map((e) => <RestaurantCard {...e} />)}
           </SimpleGrid>
           <ModalAddRestaurant
             button={
