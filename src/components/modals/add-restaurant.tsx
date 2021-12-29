@@ -69,25 +69,6 @@ const Form = (props) => {
         <Input name="restaurant" />
         <FormHelperText>Search for the restaurant.</FormHelperText>
       </FormControl>
-      <FormControl>
-        <FormLabel htmlFor="dish">Dish</FormLabel>
-        <Input name="dish" />
-        <FormHelperText>Search for the dish.</FormHelperText>
-      </FormControl>
-      <FormControl>
-        <FormLabel htmlFor="rating">Your rating</FormLabel>
-        <RatingComponent isEditable />
-
-        <FormHelperText>
-          Give your dish some stars, or none if it does not diserve
-          them
-        </FormHelperText>
-      </FormControl>
-      <FormControl>
-        <FormLabel htmlFor="comment">Your comments</FormLabel>
-        <Textarea />
-        <FormHelperText>Explain your rating</FormHelperText>
-      </FormControl>
       <Stack>
         <FormLabel>Images</FormLabel>
         <SimpleGrid columns={3} justifyItems="center">
@@ -112,7 +93,7 @@ const Form = (props) => {
   );
 };
 
-export const ModalAddDish = (props) => {
+export const ModalAddRestaurant = (props) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   return (
     <>
@@ -125,7 +106,7 @@ export const ModalAddDish = (props) => {
       >
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Add dish</ModalHeader>
+          <ModalHeader>Add restaurant</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <Form />
