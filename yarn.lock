@@ -2284,6 +2284,11 @@ json5@^1.0.1:
   dependencies:
     minimist "^1.2.0"
 
+ky@^0.28.7:
+  version "0.28.7"
+  resolved "https://registry.yarnpkg.com/ky/-/ky-0.28.7.tgz#10c42be863fb96c1846d6e71e229263ffb72eb15"
+  integrity sha512-a23i6qSr/ep15vdtw/zyEQIDLoUaKDg9Jf04CYl/0ns/wXNYna26zJpI+MeIFaPeDvkrjLPrKtKOiiI3IE53RQ==
+
 lines-and-columns@^1.1.6:
   version "1.1.6"
   resolved "https://registry.yarnpkg.com/lines-and-columns/-/lines-and-columns-1.1.6.tgz#1c00c743b433cd0a4e80758f7b64a57440d9ff00"

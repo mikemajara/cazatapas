@@ -9,8 +9,10 @@ import {
 } from "@chakra-ui/react";
 import { RatingComponent } from "@components/rating-component";
 import NextLink from "next/link";
+import { Dish, DishInclude } from "prisma/model";
+import _ from "lodash";
 
-const IMAGE_LOCATION = "/images";
+const IMAGE_LOCATION = "/images/dishes";
 
 const mock = {
   id: 4,
@@ -20,8 +22,9 @@ const mock = {
   image: "tortilla-patatas.jpg",
 };
 
-export const DishCard = () => {
-  const { id, name, rating, tags, image } = mock;
+export const DishCard = (props: DishInclude) => {
+  const { id, name, ratings, tags, images } = props;
+  const averageRating = _.mean(ratings?.map((r) => r.value));
   return (
     <Box w="220" h="300">
       <VStack align={"flex-start"}>
@@ -30,13 +33,13 @@ export const DishCard = () => {
             as={Image}
             boxSize={220}
             fit={"cover"}
-            src={`${IMAGE_LOCATION}/${image}`}
+            src={`${IMAGE_LOCATION}/${images?.[0]?.location}`}
             borderRadius={"md"}
             boxShadow="4px 4px 0px #000000"
           />
         </NextLink>
         <Text fontWeight={"bold"}>{name}</Text>
-        <RatingComponent rating={rating} />
+        <RatingComponent rating={averageRating} />
       </VStack>
     </Box>
   );

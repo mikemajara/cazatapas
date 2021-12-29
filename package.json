@@ -21,6 +21,7 @@
     "focus-visible": "^5.2.0",
     "framer-motion": "^4",
     "human-number": "^1.0.6",
+    "ky": "^0.28.7",
     "lodash": "^4.17.21",
     "loglevel": "^1.8.0",
     "loglevel-plugin-prefix": "^0.8.4",

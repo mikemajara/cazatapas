@@ -1,6 +1,7 @@
 import { AddIcon } from "@chakra-ui/icons";
 import {
   Button,
+  Code,
   Container,
   Heading,
   HStack,
@@ -18,10 +19,12 @@ import { Layout } from "@components/layout";
 import { ModalAddDish } from "@components/modals/add-dish";
 import { MagnifyingGlass } from "phosphor-react";
 import React from "react";
+import { useAllDishes } from "src/hooks/useAllDishes";
 
 export default function Dishes() {
   const isMobile = useBreakpointValue({ base: true, sm: false });
   const IconComponent = isMobile ? IconButton : Button;
+  const { data: dishes, isLoading, error } = useAllDishes();
   return (
     <Layout>
       <Container p={10} maxW="container.xl">
@@ -44,14 +47,20 @@ export default function Dishes() {
             justifyItems="center"
             rowGap={10}
           >
+            {isLoading
+              ? "Loading..."
+              : // <Code w="full">
+                //   <pre>{JSON.stringify(dishes, null, 2)}</pre>
+                // </Code>
+                dishes.map((e) => <DishCard {...e} />)}
+            {/* <DishCard />
             <DishCard />
             <DishCard />
             <DishCard />
             <DishCard />
             <DishCard />
             <DishCard />
-            <DishCard />
-            <DishCard />
+            <DishCard /> */}
           </SimpleGrid>
           <ModalAddDish
             button={
