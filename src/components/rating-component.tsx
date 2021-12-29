@@ -1,10 +1,10 @@
-import { Button, HStack } from "@chakra-ui/react";
+import { Button, HStack, chakra, Icon } from "@chakra-ui/react";
 import { Star } from "phosphor-react";
 import React, { useEffect, useState } from "react";
 
 export const RatingComponent = (props) => {
   const [value, setValue] = useState(0);
-  const { rating = 0, isEditable = false } = props;
+  const { rating = 0, isEditable = false, color = "black" } = props;
   const starCount = Math.round(rating);
   useEffect(() => {
     if (starCount) {
@@ -19,8 +19,10 @@ export const RatingComponent = (props) => {
     <HStack>
       <HStack>
         {starArray.map((e, i) => (
-          <Star
-            size={starSize}
+          <Icon
+            as={Star}
+            fontSize={starSize}
+            color={color}
             weight={e ? "fill" : "regular"}
             key={i}
             onClick={() => {
