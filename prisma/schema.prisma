@@ -84,11 +84,11 @@ model Dish {
 
 model Restaurant {
   id        Int      @id @default(autoincrement())
-  name      String
-  url       String
+  name      String   @unique
+  url       String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  dish      Dish[]
+  dishes    Dish[]
   images    Image[]
 }
 
@@ -101,7 +101,7 @@ model Tag {
 model Image {
   id           String      @id @default(cuid())
   name         String?
-  Location     String?
+  location     String?
   dish         Dish?       @relation(fields: [dishId], references: [id])
   restaurant   Restaurant? @relation(fields: [restaurantId], references: [id])
   dishId       Int?
