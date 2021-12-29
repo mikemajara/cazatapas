@@ -54,11 +54,8 @@ model User {
 }
 
 model Settings {
-  id                 String     @id @default(cuid())
-  isSubscribed       Boolean
-  favoriteTags       Tag[]
-  favoriteCategories Category[]
-  User               User[]
+  id   String @id @default(cuid())
+  User User[]
 }
 
 model VerificationToken {
@@ -70,50 +67,43 @@ model VerificationToken {
 }
 
 // domain specific
-model Product {
-  id           Int       @id @default(autoincrement())
+model Dish {
+  id           Int         @id @default(autoincrement())
   name         String?
-  raw_name     String?
   description  String?
   price        Float?
-  raw_price    String?
-  discount     Float?
-  raw_discount String?
-  shop         Shop?     @relation(fields: [shopId], references: [id])
-  shopId       String?
-  offer_date   DateTime?
-  image        String?
-  createdAt    DateTime? @default(now())
-  updatedAt    DateTime? @updatedAt
-  category     Category? @relation(fields: [categoryId], references: [id])
-  categoryId   String?
+  restaurant   Restaurant? @relation(fields: [restaurantId], references: [id])
+  restaurantId Int?
+  images       Image[]
+  createdAt    DateTime?   @default(now())
+  updatedAt    DateTime?   @updatedAt
   tags         Tag[]
   brand        String?
 
 }
 
-model Shop {
-  id        String    @id @default(cuid())
+model Restaurant {
+  id        Int      @id @default(autoincrement())
   name      String
   url       String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  Product   Product[]
-}
-
-model Category {
-  id         String    @id @default(cuid())
-  name       String
-  Product    Product[]
-  Settings   Settings? @relation(fields: [settingsId], references: [id])
-  settingsId String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  dish      Dish[]
+  images    Image[]
 }
 
 model Tag {
-  id         String    @id @default(cuid())
-  name       String
-  Product    Product?  @relation(fields: [productId], references: [id])
-  productId  Int?
-  Settings   Settings? @relation(fields: [settingsId], references: [id])
-  settingsId String?
+  id     String @id @default(cuid())
+  name   String
+  dishes Dish[]
+}
+
+model Image {
+  id           String      @id @default(cuid())
+  name         String?
+  Location     String?
+  dish         Dish?       @relation(fields: [dishId], references: [id])
+  restaurant   Restaurant? @relation(fields: [restaurantId], references: [id])
+  dishId       Int?
+  restaurantId Int?
 }
