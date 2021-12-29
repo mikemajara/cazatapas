@@ -47,6 +47,7 @@ import {
 } from "@components/layout/footer";
 import { ModalAddDish } from "@components/modals/add-dish";
 import { SelectAsyncRestaurant } from "@components/select/async-select-restaurant";
+import { AiOutlineShop } from "react-icons/ai";
 
 const Index = () => {
   const [categories, setCategories] = useState([]);
@@ -102,11 +103,14 @@ const Index = () => {
             <Heading fontSize="6xl">out there</Heading>
           </Stack>
           <Stack direction={["column", "row"]} spacing={10}>
-            {/* <InputGroup> */}
-            <SelectAsyncRestaurant placeholder="Restaurant" />
-            {/* </InputGroup> */}
-            {/* <InputGroup maxW={330}>
-            </InputGroup> */}
+            <SelectAsyncRestaurant
+              placeholder={
+                <HStack>
+                  <AiOutlineShop />
+                  <Text>Search Restaurant</Text>
+                </HStack>
+              }
+            />
             <InputGroup maxW={330}>
               <Input placeholder="Dish" />
               <InputLeftElement

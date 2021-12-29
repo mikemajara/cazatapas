@@ -12,6 +12,7 @@ import {
   Image,
   Stack,
   Text,
+  useToken,
 } from "@chakra-ui/react";
 import { RestaurantInclude } from "prisma/model";
 import { useRouter } from "next/router";
@@ -48,16 +49,23 @@ export const SelectAsyncRestaurant = (props: any) => {
             ...provided,
             borderColor: "gray.400",
           }),
+          menuList: (provided) => ({
+            ...provided,
+            paddingTop: 0,
+            paddingBottom: 0,
+          }),
         }}
         components={{
           DropdownIndicator: () => null,
           IndicatorSeparator: () => null,
           Option: ({ children, ...rest }) => {
-            logger.debug("async-select-restaurant:Option:rest", rest);
+            const bgGray = useToken("colors", ["gray.100"]);
             return (
               <HStack
                 {...rest}
-                sx={{ bgColor: "gray.500" }}
+                _hover={{
+                  backgroundColor: bgGray,
+                }}
                 onClick={() =>
                   router.push(`/restaurants/${rest.data.id}`)
                 }
