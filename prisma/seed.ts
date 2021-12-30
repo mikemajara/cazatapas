@@ -45,7 +45,6 @@ const restaurantData: Prisma.RestaurantCreateInput[] = [
     name: "La Tapeoteca",
     images: {
       create: {
-        name: "la-tapeopteca",
         fileName: "la-tapeoteca.png",
       },
     },
@@ -54,7 +53,6 @@ const restaurantData: Prisma.RestaurantCreateInput[] = [
     name: "Los Zagales",
     images: {
       create: {
-        name: "los-zagales",
         fileName: "los-zagales.png",
       },
     },
@@ -68,7 +66,6 @@ const dishData: Prisma.DishCreateInput[] = [
     restaurant: { connect: { name: "La Tapeoteca" } },
     images: {
       create: {
-        name: "marinera-negra.jpg",
         fileName: "marinera-negra.jpg",
       },
     },

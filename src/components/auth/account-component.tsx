@@ -14,6 +14,7 @@ import {
   SkeletonCircle,
   SkeletonText,
   Skeleton,
+  useBreakpointValue,
 } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { signIn, useSession } from "next-auth/react";
@@ -32,6 +33,7 @@ import { useRouter } from "next/dist/client/router";
 export default function AccountComponent(props: any) {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const isDesktop = useBreakpointValue({ base: false, sm: true });
   const MENU_ITEMS: Array<any> = [
     {
       label: "Inicio",
@@ -102,22 +104,26 @@ export default function AccountComponent(props: any) {
               src={session?.user.image}
             />
           )}
-          <Stack minW="100">
-            {status === "loading" ? (
-              <Skeleton h="20px" spacing="4" />
-            ) : (
-              <Text fontSize={"sm"} fontWeight={"bold"}>
-                {session?.user.name ||
-                  session?.user.email ||
-                  "Fulanito"}
-              </Text>
-            )}
-          </Stack>
-          <AIcon
-            ml={2}
-            as={ChevronDownIcon}
-            animate={{ rotate: isOpen ? 180 : 0 }}
-          />
+          {isDesktop && (
+            <>
+              <Stack minW="100">
+                {status === "loading" ? (
+                  <Skeleton h="20px" spacing="4" />
+                ) : (
+                  <Text fontSize={"sm"} fontWeight={"bold"}>
+                    {session?.user.name ||
+                      session?.user.email ||
+                      "Fulanito"}
+                  </Text>
+                )}
+              </Stack>
+              <AIcon
+                ml={2}
+                as={ChevronDownIcon}
+                animate={{ rotate: isOpen ? 180 : 0 }}
+              />
+            </>
+          )}
         </HStack>
       </MenuButton>
       <MenuList p={2}>

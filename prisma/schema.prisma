@@ -102,8 +102,7 @@ model Tag {
 
 model Image {
   id           String      @id @default(cuid())
-  name         String?
-  fileName     String?
+  fileName     String?     @unique
   dish         Dish?       @relation(fields: [dishId], references: [id])
   restaurant   Restaurant? @relation(fields: [restaurantId], references: [id])
   dishId       Int?

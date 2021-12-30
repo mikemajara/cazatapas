@@ -36,16 +36,17 @@ export default async function handle(
   }
 }
 
+const defaultInclude = {
+  images: true,
+  dishes: { include: { ratings: true } },
+};
+
 // GET /api/restaurants/:id?
 async function handleGET(
   id,
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  const defaultInclude = {
-    images: true,
-    dishes: { include: { ratings: true } },
-  };
   if (id) {
     const restaurantId = parseInt(id);
     const restaurant = await prisma.restaurant.findUnique({
@@ -97,13 +98,13 @@ async function handlePOST(id, req, res) {
     const restaurant = await prisma.restaurant.update({
       where: { id: restaurantId },
       data: { ...req.body },
-      include: { tags: true },
+      include: defaultInclude,
     });
     res.json(restaurant);
   } else {
     const restaurant = await prisma.restaurant.create({
       data: { ...req.body },
-      include: { tags: true },
+      include: defaultInclude,
     });
     res.json(restaurant);
   }
@@ -113,7 +114,7 @@ async function handlePOST(id, req, res) {
 async function handleDELETE(id, req, res) {
   const restaurant = await prisma.restaurant.delete({
     where: { id },
-    include: { tags: true },
+    include: defaultInclude,
   });
   res.json(restaurant);
 }
