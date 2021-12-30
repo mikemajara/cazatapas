@@ -14,25 +14,22 @@ import {
   Text,
   useToken,
 } from "@chakra-ui/react";
-import { RestaurantInclude } from "prisma/model";
+import { DishInclude, RestaurantInclude } from "prisma/model";
 import { useRouter } from "next/router";
 import _ from "lodash";
 
 const loadOptions = async (inputValue: string) => {
-  let restaurants: RestaurantInclude[] = await ky
+  let dishes: DishInclude[] = await ky
     .get(`/api/dishes?search=${inputValue}`)
     .json();
-  return (
-    restaurants
-      // ?.filter((q) => q.symbol)
-      .map((restaurant) => {
-        return {
-          ...restaurant,
-          value: restaurant.id,
-          label: `${restaurant.name}`,
-        };
-      })
-  );
+  logger.debug("dish-go-to.tsx:loadOptions:dishes", dishes);
+  return dishes.map((dish) => {
+    return {
+      ...dish,
+      value: dish.id,
+      label: `${dish.name}`,
+    };
+  });
 };
 
 const formatOptionLabel = (

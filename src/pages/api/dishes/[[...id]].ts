@@ -88,7 +88,7 @@ async function handleGET(
         : undefined,
       skip: pSize && pNumber ? pSize * (pNumber - 1) : undefined,
       take: pSize ? pSize : undefined,
-      include: defaultInclude,
+      include: { ...defaultInclude, restaurant: true },
     });
     res.json(dishes);
   }
