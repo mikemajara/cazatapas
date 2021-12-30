@@ -13,3 +13,15 @@ export const useAllRestaurants = () => {
   );
   return { data: result, isLoading, error };
 };
+
+export const useRestaurant = (id) => {
+  const [result, setResult] = useState<RestaurantInclude>();
+  const { data, isLoading, error } = useQuery<RestaurantInclude>(
+    `/api/restaurants/${id}`,
+    () => ky.get(`/api/restaurants/${id}`).json(),
+    {
+      onSuccess: (data) => setResult(data),
+    },
+  );
+  return { data: result, isLoading, error };
+};

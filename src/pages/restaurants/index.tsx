@@ -14,7 +14,7 @@ import { RestaurantCard } from "@components/cards/restaurant-card";
 import { Layout } from "@components/layout";
 import { ModalAddRestaurant } from "@components/modals/add-restaurant";
 import React from "react";
-import { useAllRestaurants } from "src/hooks/useAllRestaurants";
+import { useAllRestaurants } from "@hooks/hooks-restaurants";
 
 export default function Dishes() {
   const isMobile = useBreakpointValue({ base: true, sm: false });

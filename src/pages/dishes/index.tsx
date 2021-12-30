@@ -20,7 +20,7 @@ import { ModalAddDish } from "@components/modals/add-dish";
 import { logger } from "@lib/logger";
 import { MagnifyingGlass } from "phosphor-react";
 import React from "react";
-import { useAllDishes } from "src/hooks/useAllDishes";
+import { useAllDishes } from "@hooks/hooks-dishes";
 import { DishInclude } from "prisma/model";
 
 export default function Dishes() {

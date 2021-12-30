@@ -16,6 +16,7 @@ import {
 } from "@chakra-ui/react";
 import { RestaurantInclude } from "prisma/model";
 import { useRouter } from "next/router";
+import _ from "lodash";
 
 const loadOptions = async (inputValue: string) => {
   let restaurants: RestaurantInclude[] = await ky
@@ -34,62 +35,45 @@ const loadOptions = async (inputValue: string) => {
   );
 };
 
-export const SelectAsyncRestaurant = (props: any) => {
+const formatOptionLabel = (data) => {
+  // const bgGray = useToken("colors", ["gray.100"]);
+  logger.debug(
+    "async-select-restaurant.tsx:formatOptionLabel:label",
+    data,
+  );
+  if (_.isEmpty(data)) {
+    return <></>;
+  }
+  return (
+    <HStack spacing={5}>
+      <Image
+        boxSize={16}
+        objectFit="cover"
+        borderRadius="md"
+        src={`images/restaurants/${data.images?.[0].fileName}`}
+      />
+      <Stack>
+        <Heading size="sm">{data.name}</Heading>
+        <Text fontSize="xs" color="gray.500">
+          Murcia
+        </Text>
+      </Stack>
+    </HStack>
+  );
+};
+
+export const SelectAsyncRestaurantBasic = (props: any) => {
   const { name, defaultValue, control, placeholder } = props;
   const router = useRouter();
   if (!control) {
     return (
       <AsyncSelect
-        styles={{
-          container: (provided) => ({
-            ...provided,
-            width: "100%",
-          }),
-          control: (provided) => ({
-            ...provided,
-            borderColor: "gray.400",
-          }),
-          menuList: (provided) => ({
-            ...provided,
-            paddingTop: 0,
-            paddingBottom: 0,
-          }),
-        }}
-        components={{
-          DropdownIndicator: () => null,
-          IndicatorSeparator: () => null,
-          Option: ({ children, ...rest }) => {
-            const bgGray = useToken("colors", ["gray.100"]);
-            return (
-              <HStack
-                {...rest}
-                cursor="pointer"
-                _hover={{
-                  backgroundColor: bgGray,
-                }}
-                onClick={() =>
-                  router.push(`/restaurants/${rest.data.id}`)
-                }
-              >
-                <Image
-                  boxSize={16}
-                  objectFit="cover"
-                  p={1}
-                  borderRadius="md"
-                  src={`images/restaurants/${rest.data.images?.[0].fileName}`}
-                />
-                <Stack>
-                  <Heading size="sm">{rest.data.name}</Heading>
-                  <Text fontSize="xs" color="gray.500">
-                    Murcia
-                  </Text>
-                </Stack>
-              </HStack>
-            );
-          },
-        }}
         cacheOptions
         defaultOptions
+        formatOptionLabel={formatOptionLabel}
+        onChange={(selected) => {
+          router.push(`/restaurants/${selected.id}`);
+        }}
         placeholder={placeholder}
         loadOptions={loadOptions}
       />
@@ -108,6 +92,8 @@ export const SelectAsyncRestaurant = (props: any) => {
               {...field}
               cacheOptions
               defaultOptions
+              placeholder={placeholder}
+              formatOptionLabel={formatOptionLabel}
               loadOptions={loadOptions}
             />
           );

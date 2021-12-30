@@ -33,7 +33,7 @@ export const RestaurantCard = (props: RestaurantInclude) => {
   return (
     <Box w="220" h="300">
       <VStack align={"flex-start"}>
-        <NextLink href="restaurants/4" passHref>
+        <NextLink href={`restaurants/${id}`} passHref>
           <ChakraLink
             as={Image}
             boxSize={220}

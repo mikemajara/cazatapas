@@ -17,6 +17,7 @@
     "paths": {
       "@lib/*": ["lib/*"],
       "@components/*": ["src/components/*"],
+      "@hooks/*": ["src/hooks/*"],
       "prisma/*": ["prisma/*"]
     }
   },

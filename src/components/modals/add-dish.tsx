@@ -29,8 +29,28 @@ import { IoIosAdd } from "react-icons/io";
 import { useDropzone } from "react-dropzone";
 import { logger } from "@lib/logger";
 import ImageThumbnailComponent from "@components/cards/image-thumbnail";
+import { SelectAsyncRestaurant } from "@components/select/async-select-restaurant";
+import { AiOutlineShop } from "react-icons/ai";
+import { SelectAsyncRestaurantBasic } from "@components/select/async-select-restaurant-basic";
+import { useForm } from "react-hook-form";
+import ky from "ky";
 
-const Form = (props) => {
+export const ModalAddDish = (props) => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  // react-hook-form
+  const {
+    handleSubmit,
+    register,
+    control,
+    setValue,
+    getValues,
+    reset,
+    resetField,
+    unregister,
+    formState: { errors, isSubmitting },
+  } = useForm();
+
+  // dropzone
   const [files, setFiles] = useState<File[]>([]);
 
   const { acceptedFiles, getRootProps, getInputProps } = useDropzone({
@@ -62,58 +82,55 @@ const Form = (props) => {
       />
     );
   });
-  return (
-    <Stack>
-      <FormControl>
-        <FormLabel htmlFor="restaurant">Restaurant</FormLabel>
-        <Input name="restaurant" />
-        <FormHelperText>Search for the restaurant.</FormHelperText>
-      </FormControl>
-      <FormControl>
-        <FormLabel htmlFor="dish">Dish</FormLabel>
-        <Input name="dish" />
-        <FormHelperText>Search for the dish.</FormHelperText>
-      </FormControl>
-      <FormControl>
-        <FormLabel htmlFor="rating">Your rating</FormLabel>
-        <RatingComponent isEditable />
 
-        <FormHelperText>
-          Give your dish some stars, or none if it does not diserve
-          them
-        </FormHelperText>
-      </FormControl>
-      <FormControl>
-        <FormLabel htmlFor="comment">Your comments</FormLabel>
-        <Textarea />
-        <FormHelperText>Explain your rating</FormHelperText>
-      </FormControl>
-      <Stack>
-        <FormLabel>Images</FormLabel>
-        <SimpleGrid columns={3} justifyItems="center">
-          {thumbs}
-          <Flex
-            mt={5}
-            justifyContent="center"
-            alignItems="center"
-            boxSize="100px"
-            bgColor="gray.200"
-            borderRadius="md"
-            fontSize="38px"
-            cursor="pointer"
-            {...getRootProps()}
-          >
-            <input {...getInputProps()} />
-            <Icon color="gray.500" as={IoIosAdd} />
-          </Flex>
-        </SimpleGrid>
-      </Stack>
-    </Stack>
-  );
-};
+  // submit
+  const fileUpload = async (file) => {
+    const url = "/api/restaurants/upload";
+    const formData = new FormData();
+    formData.append("file", file);
+    logger.debug(
+      "add-restaurant.tsx: fileUpload: formData",
+      formData,
+    );
+    const config = {
+      headers: {
+        "content-type": "multipart/form-data",
+      },
+    };
+    // logger.debug("add-restaurant.tsx:fileUpload: ", {
+    //   body: formData,
+    //   ...config,
+    // });
+    return await ky.post(url, { body: formData }).json();
+  };
 
-export const ModalAddDish = (props) => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  async function onSubmit(values) {
+    logger.debug("onSubmit:values", values);
+    let linkedImages = [];
+    try {
+      for (const file of files) {
+        const { files: uploadedFiles } = await fileUpload(file);
+        logger.debug(
+          "add-restaurant.tsx:onSubmit:uploadedFiles",
+          uploadedFiles,
+        );
+        linkedImages.push(uploadedFiles.file.newFilename);
+      }
+      await ky.post(`/api/restaurants`, {
+        json: {
+          ...values,
+          images: {
+            create: linkedImages.map((e) => ({ fileName: e })),
+          },
+        },
+      });
+      onClose();
+      reset();
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   return (
     <>
       {React.cloneElement(props.button, { onClick: onOpen })}
@@ -124,22 +141,90 @@ export const ModalAddDish = (props) => {
         scrollBehavior="inside"
       >
         <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Add dish</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <Form />
-          </ModalBody>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <ModalContent>
+            <ModalHeader>Add dish</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              <Stack>
+                <FormControl>
+                  <FormLabel htmlFor="restaurant">
+                    Restaurant
+                  </FormLabel>
+                  <SelectAsyncRestaurantBasic
+                    name="restaurant"
+                    control={control}
+                    placeholder={
+                      <HStack>
+                        <AiOutlineShop />
+                        <Text>Search Restaurant</Text>
+                      </HStack>
+                    }
+                  />
+                  <FormHelperText>
+                    Search for the restaurant.
+                  </FormHelperText>
+                </FormControl>
+                <FormControl>
+                  <FormLabel htmlFor="dish">Dish</FormLabel>
+                  <Input name="dish" />
+                  <FormHelperText>
+                    Search for the dish.
+                  </FormHelperText>
+                </FormControl>
+                <FormControl>
+                  <FormLabel htmlFor="rating">Your rating</FormLabel>
+                  <RatingComponent isEditable />
 
-          <ModalFooter>
-            <Button variant="ghost" mr={3} onClick={onClose}>
-              Close
-            </Button>
-            <Button variant="solid" colorScheme="orange">
-              Save
-            </Button>
-          </ModalFooter>
-        </ModalContent>
+                  <FormHelperText>
+                    Give your dish some stars, or none if it does not
+                    diserve them
+                  </FormHelperText>
+                </FormControl>
+                <FormControl>
+                  <FormLabel htmlFor="comment">
+                    Your comments
+                  </FormLabel>
+                  <Textarea />
+                  <FormHelperText>Explain your rating</FormHelperText>
+                </FormControl>
+                <Stack>
+                  <FormLabel>Images</FormLabel>
+                  <SimpleGrid columns={3} justifyItems="center">
+                    {thumbs}
+                    <Flex
+                      mt={5}
+                      justifyContent="center"
+                      alignItems="center"
+                      boxSize="100px"
+                      bgColor="gray.200"
+                      borderRadius="md"
+                      fontSize="38px"
+                      cursor="pointer"
+                      {...getRootProps()}
+                    >
+                      <input {...getInputProps()} />
+                      <Icon color="gray.500" as={IoIosAdd} />
+                    </Flex>
+                  </SimpleGrid>
+                </Stack>
+              </Stack>
+            </ModalBody>
+
+            <ModalFooter>
+              <Button variant="ghost" mr={3} onClick={onClose}>
+                Close
+              </Button>
+              <Button
+                type="submit"
+                variant="solid"
+                colorScheme="orange"
+              >
+                Save
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </form>
       </Modal>
     </>
   );

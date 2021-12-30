@@ -5,7 +5,10 @@ export type DishInclude = Prisma.DishGetPayload<{
 }>;
 
 export type RestaurantInclude = Prisma.RestaurantGetPayload<{
-  include: { dishes: { include: { ratings: true } }; images: true };
+  include: {
+    images: true;
+    dishes: { include: { ratings: true; tags: true; images: true } };
+  };
 }>;
 
 export * from "@prisma/client";
