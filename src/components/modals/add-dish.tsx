@@ -34,6 +34,7 @@ import { AiOutlineShop } from "react-icons/ai";
 import { SelectAsyncRestaurantBasic } from "@components/select/async-select-restaurant-basic";
 import { useForm } from "react-hook-form";
 import ky from "ky";
+import _ from "lodash";
 
 export const ModalAddDish = (props) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -85,22 +86,14 @@ export const ModalAddDish = (props) => {
 
   // submit
   const fileUpload = async (file) => {
-    const url = "/api/restaurants/upload";
+    const url = "/api/dishes/upload";
     const formData = new FormData();
     formData.append("file", file);
-    logger.debug(
-      "add-restaurant.tsx: fileUpload: formData",
-      formData,
-    );
     const config = {
       headers: {
         "content-type": "multipart/form-data",
       },
     };
-    // logger.debug("add-restaurant.tsx:fileUpload: ", {
-    //   body: formData,
-    //   ...config,
-    // });
     return await ky.post(url, { body: formData }).json();
   };
 
@@ -116,9 +109,20 @@ export const ModalAddDish = (props) => {
         );
         linkedImages.push(uploadedFiles.file.newFilename);
       }
-      await ky.post(`/api/restaurants`, {
+      await ky.post(`/api/dishes`, {
         json: {
-          ...values,
+          ..._.omit(values, ["restaurant", "comments", "dish"]),
+          restaurant: {
+            connect: {
+              id: values.restaurant.id,
+            },
+          },
+          comments: {
+            create: {
+              text: values.comment,
+              user: { connect: { email: "alice@rateplate.io" } },
+            },
+          },
           images: {
             create: linkedImages.map((e) => ({ fileName: e })),
           },
@@ -166,8 +170,8 @@ export const ModalAddDish = (props) => {
                   </FormHelperText>
                 </FormControl>
                 <FormControl>
-                  <FormLabel htmlFor="dish">Dish</FormLabel>
-                  <Input name="dish" />
+                  <FormLabel htmlFor="name">Dish</FormLabel>
+                  <Input name="name" {...register("name")} />
                   <FormHelperText>
                     Search for the dish.
                   </FormHelperText>
@@ -185,7 +189,7 @@ export const ModalAddDish = (props) => {
                   <FormLabel htmlFor="comment">
                     Your comments
                   </FormLabel>
-                  <Textarea />
+                  <Textarea {...register("comments")} />
                   <FormHelperText>Explain your rating</FormHelperText>
                 </FormControl>
                 <Stack>
@@ -219,8 +223,10 @@ export const ModalAddDish = (props) => {
                 type="submit"
                 variant="solid"
                 colorScheme="orange"
+                isLoading={isSubmitting}
+                loadingText="Adding..."
               >
-                Save
+                Add
               </Button>
             </ModalFooter>
           </ModalContent>
