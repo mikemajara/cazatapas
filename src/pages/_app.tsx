@@ -6,6 +6,7 @@ import { Global, css } from "@emotion/react";
 
 import "focus-visible/dist/focus-visible";
 import { QueryClient, QueryClientProvider } from "react-query";
+import NextNProgress from "nextjs-progressbar";
 
 // Create a client
 
@@ -26,6 +27,11 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <AuthProvider session={pageProps.session}>
       <ChakraProvider resetCSS theme={theme}>
+        <NextNProgress
+          color="black"
+          height={2}
+          options={{ showSpinner: false }}
+        />
         <QueryClientProvider client={queryClient}>
           <Component {...pageProps} />
         </QueryClientProvider>

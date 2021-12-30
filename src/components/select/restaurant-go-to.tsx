@@ -10,6 +10,7 @@ import {
   Heading,
   HStack,
   Image,
+  Spinner,
   Stack,
   Text,
   useToken,
@@ -59,6 +60,18 @@ const formatOptionLabel = (
           </Text>
         )}
       </Stack>
+      {isSelected && (
+        <Box
+          w={8}
+          p={2}
+          position="absolute"
+          right="0"
+          top={1.5}
+          bg="white"
+        >
+          <Spinner size={"sm"} />
+        </Box>
+      )}
     </HStack>
   );
 };

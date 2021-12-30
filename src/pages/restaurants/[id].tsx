@@ -69,7 +69,7 @@ export default function Dish(props) {
           <Heading size="xl" textAlign={"center"}>
             {isLoading
               ? "Asking for restaurant's name"
-              : restaurant.name}
+              : restaurant?.name}
             .
           </Heading>
           <SimpleGrid
