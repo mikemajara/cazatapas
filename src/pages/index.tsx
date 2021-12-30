@@ -48,6 +48,9 @@ import {
 import { ModalAddDish } from "@components/modals/add-dish";
 import { SelectAsyncRestaurant } from "@components/select/async-select-restaurant";
 import { AiOutlineShop } from "react-icons/ai";
+import { SelectAsyncRestaurantBasic } from "@components/select/async-select-restaurant-basic";
+import { RestaurantGoTo } from "@components/select/restaurant-go-to";
+import { DishGoTo } from "@components/select/dish-go-to";
 
 const Index = () => {
   const [categories, setCategories] = useState([]);
@@ -103,22 +106,30 @@ const Index = () => {
             <Heading fontSize="6xl">out there</Heading>
           </Stack>
           <Stack direction={["column", "row"]} spacing={10}>
-            <SelectAsyncRestaurant
+            <RestaurantGoTo
               placeholder={
                 <HStack>
                   <AiOutlineShop />
-                  <Text>Search Restaurant</Text>
+                  <Text>Go to restaurant</Text>
                 </HStack>
               }
             />
-            <InputGroup maxW={330}>
+            <DishGoTo
+              placeholder={
+                <HStack>
+                  <RiRestaurant2Fill />
+                  <Text>Go to dish</Text>
+                </HStack>
+              }
+            />
+            {/* <InputGroup maxW={330}>
               <Input placeholder="Dish" />
               <InputLeftElement
                 pointerEvents="none"
                 color="gray.400"
                 children={<RiRestaurant2Fill />}
               />
-            </InputGroup>
+            </InputGroup> */}
           </Stack>
           <Box>
             <ModalAddDish

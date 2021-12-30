@@ -51,7 +51,12 @@ async function handleGET(
     const dishId = parseInt(id);
     const dish = await prisma.dish.findUnique({
       where: { id: dishId },
-      include: { ...defaultInclude, ratings: true, comments: true },
+      include: {
+        ...defaultInclude,
+        ratings: true,
+        comments: true,
+        restaurant: true,
+      },
     });
     res.json(dish);
   } else {
