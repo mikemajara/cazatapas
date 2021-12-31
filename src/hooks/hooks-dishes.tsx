@@ -14,14 +14,12 @@ export const useAllDishes = () => {
   return { data: result, isLoading, error };
 };
 
-export const useRestaurantDishes = (id) => {
-  const [result, setResult] = useState<DishInclude[]>([]);
-  const { data, isLoading, error } = useQuery<RestaurantInclude>(
-    `/api/restaurants/${id}`,
-    () => ky.get(`/api/restaurants/${id}`).json(),
-    {
-      onSuccess: (data) => setResult(data.dishes),
-    },
+export const useDish = (id) => {
+  const [result, setResult] = useState<DishInclude>();
+  const { data, isLoading, error } = useQuery<DishInclude>(
+    `/api/dishes/${id}`,
+    () => ky.get(`/api/dishes/${id}`).json(),
+    { onSuccess: (data) => setResult(data) },
   );
   return { data: result, isLoading, error };
 };

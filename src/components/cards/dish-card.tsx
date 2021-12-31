@@ -23,7 +23,7 @@ export const DishCard = (props: DishInclude) => {
   return (
     <Box w="220" h="300">
       <VStack align={"flex-start"}>
-        <NextLink href={`dishes/${id}`} passHref>
+        <NextLink href={`/dishes/${id}`} passHref>
           <ChakraLink
             as={Image}
             boxSize={220}

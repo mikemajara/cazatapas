@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Image,
   Container,
@@ -9,6 +10,8 @@ import {
   Text,
   useBreakpoint,
   Box,
+  Link as ChakraLink,
+  Avatar,
 } from "@chakra-ui/react";
 import { Layout } from "@components/layout";
 import {
@@ -17,11 +20,14 @@ import {
 } from "@components/layout/footer";
 import { navbarHeight } from "@components/layout/navbar";
 import { RatingComponent } from "@components/rating-component";
+import { useDish } from "@hooks/hooks-dishes";
+import { logger } from "@lib/logger";
 import _ from "lodash";
 import { useRouter } from "next/router";
-import React from "react";
+import NextLink from "next/link";
+import { ExternalLinkIcon } from "@chakra-ui/icons";
 
-const IMAGE_LOCATION = "/images";
+const IMAGE_LOCATION = "/images/dishes";
 const colors = [
   "red",
   "orange",
@@ -55,12 +61,18 @@ const mock = {
 };
 
 export default function Dish(props) {
-  // const router = useRouter();
-  // const { id } = router.query;
-  const { id, name, rating, votes, tags, image, opinions } = mock;
   const isDesktop = useBreakpoint("sm");
+  const router = useRouter();
+  const { id } = router.query;
+  const { data: dish, isLoading, error } = useDish(id);
+
   const navbarAndFooterHeight =
     navbarHeight + (isDesktop ? footerHeight : footerHeightBase);
+
+  const ratingCount = dish?.ratings.length;
+  const totalRating = dish?.ratings.reduce((e, r) => e + r.value, 0);
+  const averageRating =
+    Math.round((totalRating / ratingCount) * 100) / 100 || 0;
   return (
     <Layout>
       <Container
@@ -70,38 +82,57 @@ export default function Dish(props) {
           minHeight: `calc(100vh - ${navbarAndFooterHeight}px)`,
         }}
       >
-        <Stack>
-          <Heading>{name}</Heading>
+        <Stack spacing={10}>
+          <HStack justify="space-between">
+            <Heading>{dish?.name}</Heading>
+            <NextLink
+              href={`/restaurants/${dish?.restaurant.id}`}
+              passHref
+            >
+              <ChakraLink target="_blank" fontSize="lg">
+                <HStack>
+                  <Text>{dish?.restaurant.name}</Text>
+                  <ExternalLinkIcon />
+                </HStack>
+              </ChakraLink>
+            </NextLink>
+          </HStack>
           <Stack direction={["column", "row"]} spacing={10}>
-            <Stack w="full" spacing={10}>
+            <Stack w="full" spacing={10} maxW={["100%", "50%"]}>
               {/* image-and-rating */}
               <Stack direction={["column", "row"]} spacing={10}>
                 <Image
                   boxSize={320}
                   fit={"cover"}
-                  src={`${IMAGE_LOCATION}/${image}`}
+                  src={`${IMAGE_LOCATION}/${dish?.images?.[0]?.fileName}`}
                   borderRadius={"md"}
                   boxShadow="4px 4px 0px #000000"
                 />
                 <Stack>
                   <Stack>
-                    <Heading>Rating</Heading>
-                    <RatingComponent rating={rating} />
+                    <Heading fontWeight={"light"} size="lg">
+                      Rating
+                    </Heading>
+                    <RatingComponent rating={averageRating} />
                   </Stack>
                   <Stack>
-                    <Heading># of votes</Heading>
-                    <Heading size="lg">{votes}</Heading>
+                    <Heading fontWeight={"light"} size="lg">
+                      # of votes
+                    </Heading>
+                    <Heading size="lg">{ratingCount}</Heading>
                   </Stack>
                   <Stack>
-                    <Heading>Tags</Heading>
+                    <Heading fontWeight={"light"} size="lg">
+                      Tags
+                    </Heading>
                     <Flex flexWrap="wrap" maxW="52">
-                      {tags.map((e) => (
+                      {dish?.tags?.map((e) => (
                         <Badge
                           mr={2}
                           mt={2}
                           colorScheme={_.sample(colors)}
                         >
-                          #{e}
+                          #{e.name}
                         </Badge>
                       ))}
                     </Flex>
@@ -157,12 +188,18 @@ export default function Dish(props) {
             </Stack>
             <Stack>
               <Heading>Comments</Heading>
-              {opinions.map(({ user, comment }) => (
-                <Stack>
-                  <Heading size="md">{user}</Heading>
-                  <Text>{comment}</Text>
-                </Stack>
-              ))}
+              {dish?.comments.map(({ user, text }) => {
+                // logger.debug(`dishes/[${id}].tsx:user`, user);
+                return (
+                  <Stack>
+                    <HStack justify="space-between">
+                      <Heading size="md">@{user.name}</Heading>
+                      <Text>{"12 Jan 2021"}</Text>
+                    </HStack>
+                    <Text>{text}</Text>
+                  </Stack>
+                );
+              })}
             </Stack>
           </Stack>
         </Stack>

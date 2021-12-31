@@ -6,6 +6,7 @@ export type DishInclude = Prisma.DishGetPayload<{
     tags: true;
     images: true;
     restaurant: true;
+    comments: { include: { user: true } };
   };
 }>;
 

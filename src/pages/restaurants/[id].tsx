@@ -18,10 +18,7 @@ import { RatingComponent } from "@components/rating-component";
 import _ from "lodash";
 import { useRouter } from "next/router";
 import React from "react";
-import {
-  useAllDishes,
-  useRestaurantDishes,
-} from "@hooks/hooks-dishes";
+import { useAllDishes } from "@hooks/hooks-dishes";
 import { useRestaurant } from "@hooks/hooks-restaurants";
 import { AddIcon } from "@chakra-ui/icons";
 import { ModalAddDish } from "@components/modals/add-dish";

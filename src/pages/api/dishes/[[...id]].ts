@@ -39,6 +39,7 @@ export default async function handle(
 const defaultInclude = {
   images: true,
   ratings: true,
+  tags: true,
 };
 
 // GET /api/dishes/:id?
@@ -53,9 +54,9 @@ async function handleGET(
       where: { id: dishId },
       include: {
         ...defaultInclude,
-        ratings: true,
-        comments: true,
         restaurant: true,
+        ratings: true,
+        comments: { include: { user: true } },
       },
     });
     res.json(dish);
