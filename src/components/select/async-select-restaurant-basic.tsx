@@ -35,28 +35,29 @@ const loadOptions = async (inputValue: string) => {
   );
 };
 
-const formatOptionLabel = (data) => {
-  // const bgGray = useToken("colors", ["gray.100"]);
-  logger.debug(
-    "async-select-restaurant.tsx:formatOptionLabel:label",
-    data,
-  );
+const formatOptionLabel = (
+  data,
+  formatOptionLabelMeta,
+  isSelected = false,
+) => {
   if (_.isEmpty(data)) {
     return <></>;
   }
   return (
-    <HStack spacing={5}>
+    <HStack spacing={isSelected ? 2 : 5}>
       <Image
-        boxSize={16}
+        boxSize={isSelected ? 8 : 16}
         objectFit="cover"
         borderRadius="md"
         src={`images/restaurants/${data.images?.[0].fileName}`}
       />
       <Stack>
         <Heading size="sm">{data.name}</Heading>
-        <Text fontSize="xs" color="gray.500">
-          Murcia
-        </Text>
+        {!isSelected && (
+          <Text fontSize="xs" color="gray.500">
+            {data.location ?? ""}
+          </Text>
+        )}
       </Stack>
     </HStack>
   );
@@ -64,21 +65,6 @@ const formatOptionLabel = (data) => {
 
 export const SelectAsyncRestaurantBasic = (props: any) => {
   const { name, defaultValue, control, placeholder } = props;
-  const router = useRouter();
-  if (!control) {
-    return (
-      <AsyncSelect
-        cacheOptions
-        defaultOptions
-        formatOptionLabel={formatOptionLabel}
-        onChange={(selected) => {
-          router.push(`/restaurants/${selected.id}`);
-        }}
-        placeholder={placeholder}
-        loadOptions={loadOptions}
-      />
-    );
-  }
 
   return (
     <>
@@ -92,6 +78,20 @@ export const SelectAsyncRestaurantBasic = (props: any) => {
               {...field}
               cacheOptions
               defaultOptions
+              components={{
+                SingleValue: (props) => {
+                  return (
+                    <components.SingleValue
+                      {...props}
+                      children={formatOptionLabel(
+                        props.data,
+                        null,
+                        true,
+                      )}
+                    />
+                  );
+                },
+              }}
               placeholder={placeholder}
               formatOptionLabel={formatOptionLabel}
               loadOptions={loadOptions}

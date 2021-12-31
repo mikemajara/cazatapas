@@ -22,8 +22,9 @@ import {
   Flex,
   Icon,
   SimpleGrid,
+  Divider,
 } from "@chakra-ui/react";
-import { Camera } from "phosphor-react";
+import { Camera, TagSimple } from "phosphor-react";
 import { RatingComponent } from "@components/rating-component";
 import { IoIosAdd } from "react-icons/io";
 import { useDropzone } from "react-dropzone";
@@ -35,6 +36,7 @@ import { SelectAsyncRestaurantBasic } from "@components/select/async-select-rest
 import { useForm } from "react-hook-form";
 import ky from "ky";
 import _ from "lodash";
+import { SelectAsyncTags } from "@components/select/async-select-tags";
 
 export const ModalAddDish = (props) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -170,12 +172,27 @@ export const ModalAddDish = (props) => {
                   </FormHelperText>
                 </FormControl>
                 <FormControl>
-                  <FormLabel htmlFor="name">Dish</FormLabel>
+                  <FormLabel htmlFor="name">Dish name</FormLabel>
                   <Input name="name" {...register("name")} />
                   <FormHelperText>
                     Search for the dish.
                   </FormHelperText>
                 </FormControl>
+                <FormControl>
+                  <FormLabel htmlFor="name">Tags</FormLabel>
+                  <SelectAsyncTags
+                    name="tags"
+                    control={control}
+                    placeholder={
+                      <HStack>
+                        <TagSimple />
+                        <Text>Search Tags</Text>
+                      </HStack>
+                    }
+                  />
+                  <FormHelperText>Give it some tags.</FormHelperText>
+                </FormControl>
+                <Divider my={10} />
                 <FormControl>
                   <FormLabel htmlFor="rating">Your rating</FormLabel>
                   <RatingComponent isEditable />

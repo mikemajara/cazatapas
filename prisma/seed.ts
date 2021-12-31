@@ -51,6 +51,7 @@ const restaurantData: Prisma.RestaurantCreateInput[] = [
         fileName: "la-tapeoteca.png",
       },
     },
+    location: "Murcia",
   },
   {
     name: "Los Zagales",
@@ -59,6 +60,7 @@ const restaurantData: Prisma.RestaurantCreateInput[] = [
         fileName: "los-zagales.png",
       },
     },
+    location: "Murcia",
   },
 ];
 

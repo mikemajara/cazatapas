@@ -155,9 +155,6 @@ export default function Dish(props) {
                     _before={{
                       content: `""`,
                       position: "absolute",
-                      // position: "relative",
-                      // w: "100px",
-                      // h: "100px",
                       w: "100%",
                       h: "100%",
                       backgroundImage:
