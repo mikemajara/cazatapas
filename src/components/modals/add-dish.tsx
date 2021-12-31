@@ -192,23 +192,6 @@ export const ModalAddDish = (props) => {
                   />
                   <FormHelperText>Give it some tags.</FormHelperText>
                 </FormControl>
-                <Divider my={10} />
-                <FormControl>
-                  <FormLabel htmlFor="rating">Your rating</FormLabel>
-                  <RatingComponent isEditable />
-
-                  <FormHelperText>
-                    Give your dish some stars, or none if it does not
-                    diserve them
-                  </FormHelperText>
-                </FormControl>
-                <FormControl>
-                  <FormLabel htmlFor="comment">
-                    Your comments
-                  </FormLabel>
-                  <Textarea {...register("comments")} />
-                  <FormHelperText>Explain your rating</FormHelperText>
-                </FormControl>
                 <Stack>
                   <FormLabel>Images</FormLabel>
                   <SimpleGrid columns={3} justifyItems="center">
@@ -229,6 +212,23 @@ export const ModalAddDish = (props) => {
                     </Flex>
                   </SimpleGrid>
                 </Stack>
+                <Divider py={3} />
+                <FormControl>
+                  <FormLabel htmlFor="rating">Your rating</FormLabel>
+                  <RatingComponent isEditable />
+
+                  <FormHelperText>
+                    Give your dish some stars, or none if it does not
+                    diserve them
+                  </FormHelperText>
+                </FormControl>
+                <FormControl>
+                  <FormLabel htmlFor="comment">
+                    Your comments
+                  </FormLabel>
+                  <Textarea {...register("comments")} />
+                  <FormHelperText>Explain your rating</FormHelperText>
+                </FormControl>
               </Stack>
             </ModalBody>
 
