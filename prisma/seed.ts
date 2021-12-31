@@ -6,38 +6,41 @@ const userData: Prisma.UserCreateInput[] = [
   {
     name: "Alice",
     email: "alice@rateplate.io",
+    username: "alice",
     password:
       "2bd806c97f0e00af1a1fc3328fa763a9269723c8db8fac4f93af71db186d6e90",
   },
   {
     name: "Bob",
     email: "bob@rateplate.io",
+    username: "bob",
     password:
       "2bd806c97f0e00af1a1fc3328fa763a9269723c8db8fac4f93af71db186d6e90",
   },
   {
     name: "Conal",
     email: "conal@rateplate.io",
+    username: "conal",
     password:
       "2bd806c97f0e00af1a1fc3328fa763a9269723c8db8fac4f93af71db186d6e90",
   },
 ];
 
 const tagData: Prisma.TagCreateInput[] = [
-  { id: "soy", name: "soy" },
-  { id: "fish", name: "fish" },
-  { id: "mustard", name: "mustard" },
-  { id: "mollusks", name: "mollusks" },
-  { id: "dairy", name: "dairy" },
-  { id: "eggs", name: "eggs" },
-  { id: "sesame", name: "sesame" },
-  { id: "gluten", name: "gluten" },
-  { id: "nuts", name: "nuts" },
-  { id: "dioxide", name: "sulfur dioxide" },
-  { id: "crustaceans", name: "crustaceans" },
-  { id: "peanuts", name: "peanuts" },
-  { id: "celery", name: "celery" },
-  { id: "lupins", name: "lupins" },
+  { id: "soy", name: "soy", color: "green.400" },
+  { id: "fish", name: "fish", color: "blue.200" },
+  { id: "mustard", name: "mustard", color: "yellow.500" },
+  { id: "mollusks", name: "mollusks", color: "gray.400" },
+  { id: "dairy", name: "dairy", color: "gray.50" },
+  { id: "eggs", name: "eggs", color: "gray.100" },
+  { id: "sesame", name: "sesame", color: "yellow.400" },
+  { id: "gluten", name: "gluten", color: "orange.200" },
+  { id: "nuts", name: "nuts", color: "orange.800" },
+  { id: "dioxide", name: "sulfur dioxide", color: "teal.100" },
+  { id: "crustaceans", name: "crustaceans", color: "red.300" },
+  { id: "peanuts", name: "peanuts", color: "orange.600" },
+  { id: "celery", name: "celery", color: "green.500" },
+  { id: "lupins", name: "lupins", color: "yellow.600" },
 ];
 
 const restaurantData: Prisma.RestaurantCreateInput[] = [
@@ -109,7 +112,6 @@ const dishData: Prisma.DishCreateInput[] = [
     restaurant: { connect: { name: "La Tapeoteca" } },
     images: {
       create: {
-        name: "croqueta-jamon.jpg",
         fileName: "croqueta-jamon.jpg",
       },
     },
@@ -128,7 +130,6 @@ const dishData: Prisma.DishCreateInput[] = [
     restaurant: { connect: { name: "La Tapeoteca" } },
     images: {
       create: {
-        name: "pincho-moruno-atun.jpg",
         fileName: "pincho-moruno-atun.jpg",
       },
     },

@@ -39,6 +39,7 @@ model Session {
 model User {
   id            String    @id @default(cuid())
   name          String?
+  username      String?   @unique
   email         String?   @unique
   emailVerified DateTime?
   password      String?
@@ -88,6 +89,7 @@ model Restaurant {
   id        Int      @id @default(autoincrement())
   name      String   @unique
   url       String?
+  location  String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   dishes    Dish[]
@@ -95,8 +97,9 @@ model Restaurant {
 }
 
 model Tag {
-  id     String @id @default(cuid())
+  id     String  @id @default(cuid())
   name   String
+  color  String?
   dishes Dish[]
 }
 
@@ -119,10 +122,12 @@ model Rating {
 }
 
 model Comment {
-  id     String  @id @default(cuid())
-  user   User    @relation(fields: [userId], references: [id])
-  text   String?
-  userId String
-  Dish   Dish?   @relation(fields: [dishId], references: [id])
-  dishId Int?
+  id        String    @id @default(cuid())
+  user      User      @relation(fields: [userId], references: [id])
+  text      String?
+  userId    String
+  Dish      Dish?     @relation(fields: [dishId], references: [id])
+  dishId    Int?
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
 }
