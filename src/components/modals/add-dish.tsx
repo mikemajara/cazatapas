@@ -113,7 +113,12 @@ export const ModalAddDish = (props) => {
       }
       await ky.post(`/api/dishes`, {
         json: {
-          ..._.omit(values, ["restaurant", "comments", "dish"]),
+          ..._.omit(values, [
+            "restaurant",
+            "comments",
+            "dish",
+            "tags",
+          ]),
           restaurant: {
             connect: {
               id: values.restaurant.id,
@@ -127,6 +132,9 @@ export const ModalAddDish = (props) => {
           },
           images: {
             create: linkedImages.map((e) => ({ fileName: e })),
+          },
+          tags: {
+            connect: values.tags.map((e) => _.pick(e, "id")),
           },
         },
       });
