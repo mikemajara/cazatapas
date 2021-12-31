@@ -26,6 +26,8 @@ import _ from "lodash";
 import { useRouter } from "next/router";
 import NextLink from "next/link";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
+import { Tag } from "@components/tag";
+import { format } from "date-fns";
 
 const IMAGE_LOCATION = "/images/dishes";
 const colors = [
@@ -127,13 +129,9 @@ export default function Dish(props) {
                     </Heading>
                     <Flex flexWrap="wrap" maxW="52">
                       {dish?.tags?.map((e) => (
-                        <Badge
-                          mr={2}
-                          mt={2}
-                          colorScheme={_.sample(colors)}
-                        >
-                          #{e.name}
-                        </Badge>
+                        <Box mr={2} mt={2}>
+                          <Tag {...e} />
+                        </Box>
                       ))}
                     </Flex>
                   </Stack>
@@ -188,13 +186,17 @@ export default function Dish(props) {
             </Stack>
             <Stack>
               <Heading>Comments</Heading>
-              {dish?.comments.map(({ user, text }) => {
+              {dish?.comments.map(({ user, text, updatedAt }) => {
                 // logger.debug(`dishes/[${id}].tsx:user`, user);
                 return (
                   <Stack>
                     <HStack justify="space-between">
-                      <Heading size="md">@{user.name}</Heading>
-                      <Text>{"12 Jan 2021"}</Text>
+                      <Heading fontWeight="light" size="md">
+                        @{user.username}
+                      </Heading>
+                      <Text fontWeight="light">
+                        {format(new Date(updatedAt), "PP")}
+                      </Text>
                     </HStack>
                     <Text>{text}</Text>
                   </Stack>
