@@ -20,6 +20,7 @@ import {
   Heading,
   Image,
   useBreakpoint,
+  SimpleGrid,
 } from "@chakra-ui/react";
 import {
   CheckCircleIcon,
@@ -51,12 +52,14 @@ import { AiOutlineShop } from "react-icons/ai";
 import { SelectAsyncRestaurantBasic } from "@components/select/async-select-restaurant-basic";
 import { RestaurantGoTo } from "@components/select/restaurant-go-to";
 import { DishGoTo } from "@components/select/dish-go-to";
+import { useAllDishes } from "@hooks/hooks-dishes";
+import { DishCard } from "@components/cards/dish-card";
 
 const Index = () => {
   const isDesktop = useBreakpoint("sm");
   const navbarAndFooterHeight =
     navbarHeight + (isDesktop ? footerHeight : footerHeightBase);
-
+  const { data: dishes, isLoading } = useAllDishes();
   return (
     <Layout>
       <Stack
@@ -110,7 +113,7 @@ const Index = () => {
               />
             </InputGroup> */}
           </Stack>
-          <Box>
+          {/* <Box>
             <ModalAddDish
               button={
                 <Button
@@ -122,7 +125,19 @@ const Index = () => {
                 </Button>
               }
             />
-          </Box>
+          </Box> */}
+          <Stack spacing={10}>
+            <Heading>Best dishes</Heading>
+            <SimpleGrid
+              columns={{ base: 1, sm: 2, xl: 3 }}
+              justifyItems="center"
+              rowGap={10}
+            >
+              {isLoading
+                ? "Redefining the meaning of flavor..."
+                : dishes.map((e) => <DishCard {...e} />)}
+            </SimpleGrid>
+          </Stack>
         </Stack>
       </Stack>
     </Layout>

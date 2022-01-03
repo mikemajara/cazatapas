@@ -78,7 +78,7 @@ export function Footer() {
   return (
     <Stack
       h={`${isDesktop ? footerHeight : footerHeightBase}px`}
-      py={4}
+      p={4}
       border="1px solid"
       borderColor="gray.300"
       bg={useColorModeValue("whiteAlpha.200", "gray.700")}
@@ -91,7 +91,7 @@ export function Footer() {
       >
         <Container
           as={Stack}
-          maxW={"container.xl"}
+          maxW={"container.xl2"}
           direction={{ base: "column", [BREAKPOINT]: "row" }}
           spacing={4}
           justify={{ base: "center", [BREAKPOINT]: "space-between" }}
