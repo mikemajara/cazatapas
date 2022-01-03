@@ -56,8 +56,7 @@ export default function Dishes() {
               : dishes.map((e) => <DishCard {...e} />)}
           </SimpleGrid>
           <ModalAddDish
-            id="add-dish"
-            isOpen={router.asPath.match(/#add-dish/)}
+            isOpen={Boolean(router.query.addDish)}
             button={
               <IconComponent
                 aria-label="add"

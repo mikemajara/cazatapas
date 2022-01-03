@@ -40,17 +40,48 @@ import { SelectAsyncTags } from "@components/select/async-select-tags";
 import { useRouter } from "next/router";
 
 export const ModalAddDish = (props) => {
-  const { isOpen, onOpen: handleOnOpen, onClose } = useDisclosure();
+  const {
+    isOpen,
+    onOpen: onOpenModal,
+    onClose: onCloseModal,
+  } = useDisclosure();
   const router = useRouter();
+
   const onOpen = () => {
-    router.push(router.asPath, "#add-dish", { shallow: true });
-    handleOnOpen();
+    router.push(
+      {
+        pathname: router.basePath,
+        query: {
+          ...router.query,
+          addDish: true,
+        },
+      },
+      null,
+      { shallow: true },
+    );
+    onOpenModal();
   };
+
+  const onClose = () => {
+    router.push(
+      {
+        pathname: router.basePath,
+        query: {
+          ..._.omit(router.query, "addDish"),
+        },
+      },
+      null,
+      { shallow: true },
+    );
+    onCloseModal();
+  };
+
   useEffect(() => {
     if (props.isOpen) {
-      handleOnOpen();
+      onOpenModal();
     }
   }, [props.isOpen]);
+
   // react-hook-form
   const {
     handleSubmit,
