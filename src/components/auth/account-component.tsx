@@ -29,8 +29,9 @@ import { BsGear } from "react-icons/bs";
 import { IoIosLogIn, IoIosLogOut } from "react-icons/io";
 import { IoBookmarkOutline } from "react-icons/io5";
 import { useRouter } from "next/dist/client/router";
+import { withAuthModal } from "@components/auth/auth-modal";
 
-export default function AccountComponent(props: any) {
+export const AccountComponent = withAuthModal((props: any) => {
   const { data: session, status } = useSession();
   const router = useRouter();
   const isDesktop = useBreakpointValue({ base: false, sm: true });
@@ -65,12 +66,13 @@ export default function AccountComponent(props: any) {
     },
     {
       label: "Register",
-      href: "/auth/register",
+      href: "/auth/signup",
       icon: <BiRegistered />,
       isVisible: !session,
     },
     {
       label: "Sign in",
+      onClick: (e) => props.openAuthModal(),
       href: `/auth/signin?callbackUrl=${router.pathname}`,
       icon: <IoIosLogIn />,
       isVisible: !session,
@@ -85,7 +87,7 @@ export default function AccountComponent(props: any) {
 
   const { isOpen, onOpen, onClose, onToggle } = useDisclosure();
   return (
-    <Menu>
+    <Menu isOpen={isOpen} onClose={onClose}>
       <MenuButton
         as={Button}
         // rounded={"full"}
@@ -133,7 +135,7 @@ export default function AccountComponent(props: any) {
               <MenuDivider key={item.label} />
             ) : (
               <NextLink
-                href={item.href}
+                href={item.onClick ? "" : item.href}
                 passHref={!item.onClick}
                 key={item.label}
               >
@@ -153,4 +155,4 @@ export default function AccountComponent(props: any) {
       </MenuList>
     </Menu>
   );
-}
+});

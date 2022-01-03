@@ -130,7 +130,7 @@ export const AuthCredentials = () => {
                 Not a user yet?{" "}
                 <Link
                   color={"blue.400"}
-                  href={`signup${
+                  href={`/auth/signup${
                     router.query.callbackUrl
                       ? `?callbackUrl=${router.query.callbackUrl}`
                       : ""
