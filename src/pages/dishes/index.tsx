@@ -22,10 +22,12 @@ import { MagnifyingGlass } from "phosphor-react";
 import React from "react";
 import { useAllDishes } from "@hooks/hooks-dishes";
 import { DishInclude } from "prisma/model";
+import { Router, useRouter } from "next/router";
 
 export default function Dishes() {
   const isMobile = useBreakpointValue({ base: true, sm: false });
   const IconComponent = isMobile ? IconButton : Button;
+  const router = useRouter();
   const { data: dishes, isLoading, error } = useAllDishes();
   return (
     <Layout>
@@ -54,6 +56,8 @@ export default function Dishes() {
               : dishes.map((e) => <DishCard {...e} />)}
           </SimpleGrid>
           <ModalAddDish
+            id="add-dish"
+            isOpen={router.asPath.match(/#add-dish/)}
             button={
               <IconComponent
                 aria-label="add"

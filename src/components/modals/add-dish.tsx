@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Modal,
   ModalOverlay,
@@ -37,9 +37,20 @@ import { useForm } from "react-hook-form";
 import ky from "ky";
 import _ from "lodash";
 import { SelectAsyncTags } from "@components/select/async-select-tags";
+import { useRouter } from "next/router";
 
 export const ModalAddDish = (props) => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen, onOpen: handleOnOpen, onClose } = useDisclosure();
+  const router = useRouter();
+  const onOpen = () => {
+    router.push(router.asPath, "#add-dish", { shallow: true });
+    handleOnOpen();
+  };
+  useEffect(() => {
+    if (props.isOpen) {
+      handleOnOpen();
+    }
+  }, [props.isOpen]);
   // react-hook-form
   const {
     handleSubmit,
