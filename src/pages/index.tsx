@@ -53,30 +53,9 @@ import { RestaurantGoTo } from "@components/select/restaurant-go-to";
 import { DishGoTo } from "@components/select/dish-go-to";
 
 const Index = () => {
-  const [categories, setCategories] = useState([]);
-  const [tags, setTags] = useState([]);
   const isDesktop = useBreakpoint("sm");
   const navbarAndFooterHeight =
     navbarHeight + (isDesktop ? footerHeight : footerHeightBase);
-  const toggleSelectedCategories = (category: string) => {
-    if (categories.includes(category)) {
-      setCategories([...categories.filter((e) => e !== category)]);
-    } else {
-      setCategories([...categories, category]);
-    }
-  };
-
-  const toggleSelectedTags = (tag: string) => {
-    if (tags.includes(tag)) {
-      setTags([...tags.filter((e) => e !== tag)]);
-    } else {
-      setTags([...tags, tag]);
-    }
-  };
-
-  useEffect(() => {
-    console.log(categories);
-  }, [categories]);
 
   return (
     <Layout>
