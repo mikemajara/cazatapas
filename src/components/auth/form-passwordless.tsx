@@ -14,7 +14,7 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { MdOutlineEmail } from "react-icons/md";
 
-export default function FormPasswordlessEmail() {
+export function FormPasswordlessEmail() {
   const { isOpen, onToggle } = useDisclosure();
   const router = useRouter();
   const {
