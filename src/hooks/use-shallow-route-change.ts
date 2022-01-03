@@ -1,14 +1,15 @@
 import React from "react";
 import { omit } from "lodash";
 import { useRouter } from "next/router";
+import { logger } from "@lib/logger";
 
-export const ShallowRouteChange = (key) => {
+export const useShallowRouteChange = (key) => {
   const router = useRouter();
 
   const setKey = (value, fn = () => {}) => {
     router.push(
       {
-        pathname: router.asPath,
+        pathname: router.basePath,
         query: {
           ...router.query,
           [key]: value,
@@ -20,9 +21,13 @@ export const ShallowRouteChange = (key) => {
     fn();
   };
   const unsetKey = (fn = () => {}) => {
+    logger.debug(
+      "use-shallow-route-change.tsx:unsetKey:router.query",
+      router.query,
+    );
     router.push(
       {
-        pathname: router.asPath,
+        pathname: router.basePath,
         query: {
           ...omit(router.query, key),
         },

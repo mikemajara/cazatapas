@@ -38,6 +38,7 @@ import ky from "ky";
 import _ from "lodash";
 import { SelectAsyncTags } from "@components/select/async-select-tags";
 import { useRouter } from "next/router";
+import { useShallowRouteChange } from "@hooks/use-shallow-route-change";
 
 export const ModalAddDish = (props) => {
   const {
@@ -47,34 +48,11 @@ export const ModalAddDish = (props) => {
   } = useDisclosure();
   const router = useRouter();
 
-  const onOpen = () => {
-    router.push(
-      {
-        pathname: router.basePath,
-        query: {
-          ...router.query,
-          addDish: true,
-        },
-      },
-      null,
-      { shallow: true },
-    );
-    onOpenModal();
-  };
+  const [setKeyAddDish, unsetKeyAddDish] =
+    useShallowRouteChange("addDish");
 
-  const onClose = () => {
-    router.push(
-      {
-        pathname: router.basePath,
-        query: {
-          ..._.omit(router.query, "addDish"),
-        },
-      },
-      null,
-      { shallow: true },
-    );
-    onCloseModal();
-  };
+  const onOpen = () => setKeyAddDish(true, onOpenModal);
+  const onClose = () => unsetKeyAddDish(onCloseModal);
 
   useEffect(() => {
     if (props.isOpen) {
