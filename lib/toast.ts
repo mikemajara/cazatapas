@@ -4,6 +4,7 @@ import {
   ToastPositionWithLogical,
   UseToastOptions,
 } from "@chakra-ui/toast";
+import { ReactNode } from "react";
 
 type toastStatus =
   | "success"
@@ -13,13 +14,17 @@ type toastStatus =
   | undefined;
 
 const defaultConfig: UseToastOptions = {
-  duration: 9000,
+  duration: 19000,
   isClosable: true,
   position: "bottom-right",
+  variant: "subtle",
 };
 
 const toastFactory = (status: toastStatus = "info") => {
-  return (description: string = "", config: UseToastOptions = {}) => {
+  return (
+    description: string | ReactNode = "",
+    config: UseToastOptions = {},
+  ) => {
     const toast = createStandaloneToast();
     toast({
       title: status,

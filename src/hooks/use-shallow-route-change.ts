@@ -21,10 +21,6 @@ export const useShallowRouteChange = (key) => {
     fn();
   };
   const unsetKey = (fn = () => {}) => {
-    logger.debug(
-      "use-shallow-route-change.tsx:unsetKey:router.query",
-      router.query,
-    );
     router.push(
       {
         pathname: router.basePath,

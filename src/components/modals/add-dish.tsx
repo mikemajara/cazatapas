@@ -39,6 +39,9 @@ import _ from "lodash";
 import { SelectAsyncTags } from "@components/select/async-select-tags";
 import { useRouter } from "next/router";
 import { useShallowRouteChange } from "@hooks/use-shallow-route-change";
+import { useSession } from "next-auth/react";
+import { toast } from "@lib/toast";
+import { MarkdownComponent } from "@components/markdown-component";
 
 export const ModalAddDish = (props) => {
   const {
@@ -46,7 +49,7 @@ export const ModalAddDish = (props) => {
     onOpen: onOpenModal,
     onClose: onCloseModal,
   } = useDisclosure();
-  const router = useRouter();
+  const { data: session, status } = useSession();
 
   const [setKeyAddDish, unsetKeyAddDish] =
     useShallowRouteChange("addDish");
@@ -59,6 +62,20 @@ export const ModalAddDish = (props) => {
       onOpenModal();
     }
   }, [props.isOpen]);
+
+  const handleOnOpenModal = () => {
+    logger.debug("add-dish.tsx: handleOnOpenModal: status", status);
+    if (status === "authenticated") {
+      onOpen();
+    } else {
+      toast.warning(
+        <MarkdownComponent>
+          {/* {"<a href='/auth/signin'>Log in</a> to add a dish."} */}
+          {"[Log in](/auth/signin) to add a dish."}
+        </MarkdownComponent>,
+      );
+    }
+  };
 
   // react-hook-form
   const {
@@ -167,7 +184,9 @@ export const ModalAddDish = (props) => {
 
   return (
     <>
-      {React.cloneElement(props.button, { onClick: onOpen })}
+      {React.cloneElement(props.button, {
+        onClick: handleOnOpenModal,
+      })}
       <Modal
         isOpen={isOpen}
         onClose={onClose}

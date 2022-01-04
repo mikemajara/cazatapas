@@ -18,8 +18,7 @@ const IMAGE_LOCATION = "/images/dishes";
 export const DishCard = (props: DishInclude) => {
   const { id, name, ratings, tags, images } = props;
   const averageRating = _.mean(ratings?.map((r) => r.value));
-  logger.debug(averageRating);
-  logger.debug("dish-card.tsx:props", props);
+
   return (
     <Box w="220" h="300">
       <VStack align={"flex-start"}>
