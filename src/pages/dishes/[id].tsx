@@ -22,7 +22,11 @@ import {
 } from "@components/layout/footer";
 import { navbarHeight } from "@components/layout/navbar";
 import { RatingComponent } from "@components/rating-component";
-import { useDish } from "@hooks/hooks-dishes";
+import {
+  useDish,
+  useSaveComment,
+  useSaveRating,
+} from "@hooks/hooks-dishes";
 import { logger } from "@lib/logger";
 import _ from "lodash";
 import { useRouter } from "next/router";
@@ -32,6 +36,8 @@ import { Tag } from "@components/tag";
 import { format } from "date-fns";
 import { FloppyDisk } from "phosphor-react";
 import { useForm } from "react-hook-form";
+import ky from "ky";
+import { useMutation } from "react-query";
 
 const IMAGE_LOCATION = "/images/dishes";
 const colors = [
@@ -70,8 +76,17 @@ export default function Dish(props) {
   const isDesktop = useBreakpoint("sm");
   const router = useRouter();
   const { id } = router.query;
+  logger.debug(
+    `dishes/[id].tsx:Dish:router.query.id`,
+    router.query.id,
+  );
+
   const [isEditingComment, setIsEditingComment] = useState(false);
   const { data: dish, isLoading, error } = useDish(id);
+
+  // const mutationComment = useSaveComment(id, (value) => {
+  //   reset({ comment: value });
+  // });
 
   const navbarAndFooterHeight =
     navbarHeight + (isDesktop ? footerHeight : footerHeightBase);
@@ -86,11 +101,45 @@ export default function Dish(props) {
   const {
     handleSubmit,
     register,
+    reset,
+    getValues,
     formState: { errors, isSubmitting },
-  } = useForm();
+  } = useForm({
+    defaultValues: { comment: "hola" },
+  });
+
+  const mutationComment = useMutation(
+    async (json) => {
+      logger.debug(
+        `dishes/[id].tsx:Dish:mutationComment:values`,
+        json,
+      );
+      const res = await ky
+        .post(`/api/dishes/comment?id=${id}`, {
+          json,
+        })
+        .json();
+      logger.debug(`dishes/[id].tsx:Dish:mutationComment:res`, res);
+      return res;
+    },
+    {
+      onSuccess: (value) => {
+        logger.debug(
+          `dishes/[id].tsx:Dish:mutationComment:onSuccess:value`,
+          value,
+        );
+        reset({ comment: value as string });
+      },
+    },
+  );
 
   const handleEditComment = () => {
     setIsEditingComment(!isEditingComment);
+  };
+
+  const onSaveComment = (values) => {
+    logger.debug("dishes/[id].tsx: onSaveComment: values", values);
+    mutationComment.mutate(values);
   };
 
   return (
@@ -162,51 +211,43 @@ export default function Dish(props) {
                 <RatingComponent color="orange.300" isEditable />
               </Stack>
               <Stack id="your-comments">
-                <HStack justify="space-between">
-                  <Heading fontWeight="light" size="lg">
-                    Your comments
-                  </Heading>
-                  <IconButton
-                    aria-label="edit-comment"
-                    onClick={handleEditComment}
-                    icon={
-                      isEditingComment ? <FloppyDisk /> : <EditIcon />
-                    }
-                  />
-                </HStack>
-                <Box position="relative">
-                  <EditCommentComponent
-                    minH={isEditingComment && "170px"}
-                    maxH="170"
-                    pb={10}
-                    overflowY="scroll"
-                    _before={{
-                      content: `""`,
-                      position: "absolute",
-                      w: "100%",
-                      h: "100%",
-                      backgroundImage:
-                        "linear-gradient(0deg, rgba(255,255,255,1) 0%, rgba(0,97,255,0) 19%);",
-                    }}
-                  >
-                    Ut magna anim aute ipsum. Labore velit tempor nisi
-                    dolor, lorem pariatur nulla excepteur. Sint do
-                    adipiscing commodo enim, officia sed deserunt
-                    cupidatat veniam et adipiscing laboris. Cupidatat
-                    amet laboris occaecat dolore. Mollit elit occaecat
-                    cupidatat deserunt. Laboris dolore reprehenderit
-                    aliquip commodo, velit nisi non ex mollit aute.
-                    Aute labore quis dolor. Esse fugiat reprehenderit
-                    officia ut ex lorem. Consequat enim id sint dolor
-                    quis ad. Sit incididunt veniam dolore aute anim
-                    aute. Dolore ut exercitation commodo eiusmod minim
-                    occaecat excepteur. Magna velit eu laborum culpa
-                    do, sed incididunt reprehenderit nostrud id est.
-                    Fugiat nulla pariatur in. Cillum laboris ex
-                    pariatur occaecat ea sunt culpa, cillum culpa ex
-                    minim laborum ipsum sed elit.
-                  </EditCommentComponent>
-                </Box>
+                <form onSubmit={handleSubmit(onSaveComment)}>
+                  <HStack justify="space-between">
+                    <Heading fontWeight="light" size="lg">
+                      Your comments
+                    </Heading>
+                    <IconButton
+                      aria-label="edit-comment"
+                      onClick={handleEditComment}
+                      type="submit"
+                      icon={
+                        isEditingComment ? (
+                          <FloppyDisk />
+                        ) : (
+                          <EditIcon />
+                        )
+                      }
+                    />
+                  </HStack>
+                  <Box position="relative">
+                    <EditCommentComponent
+                      minH={isEditingComment && "170px"}
+                      maxH="170"
+                      pb={10}
+                      overflowY="scroll"
+                      _before={{
+                        content: `""`,
+                        position: "absolute",
+                        w: "100%",
+                        h: "100%",
+                        backgroundImage:
+                          "linear-gradient(0deg, rgba(255,255,255,1) 0%, rgba(0,97,255,0) 19%);",
+                      }}
+                      children={getValues("comment")}
+                      {...register("comment")}
+                    />
+                  </Box>
+                </form>
               </Stack>
             </Stack>
             <Stack>

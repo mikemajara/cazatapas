@@ -22,7 +22,6 @@ var getContrast = function (hexcolor) {
 
 export const Tag = (props) => {
   const color = useToken("colors", props.color);
-  logger.debug("tag.tsx:color", color);
   return (
     <ChakraTag bgColor={props.color} color={getContrast(color)}>
       #{props.name.split(" ").join("-")}
