@@ -129,7 +129,7 @@ const Index = () => {
           <Stack spacing={10}>
             <Heading>Best dishes</Heading>
             <SimpleGrid
-              columns={{ base: 1, sm: 2, xl: 3 }}
+              columns={{ base: 1, sm: 2, "2xl": 3 }}
               justifyItems="center"
               rowGap={10}
             >
