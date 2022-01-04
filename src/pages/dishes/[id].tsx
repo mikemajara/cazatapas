@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Image,
   Container,
@@ -12,6 +12,8 @@ import {
   Box,
   Link as ChakraLink,
   Avatar,
+  IconButton,
+  Textarea,
 } from "@chakra-ui/react";
 import { Layout } from "@components/layout";
 import {
@@ -25,9 +27,11 @@ import { logger } from "@lib/logger";
 import _ from "lodash";
 import { useRouter } from "next/router";
 import NextLink from "next/link";
-import { ExternalLinkIcon } from "@chakra-ui/icons";
+import { EditIcon, ExternalLinkIcon } from "@chakra-ui/icons";
 import { Tag } from "@components/tag";
 import { format } from "date-fns";
+import { FloppyDisk } from "phosphor-react";
+import { useForm } from "react-hook-form";
 
 const IMAGE_LOCATION = "/images/dishes";
 const colors = [
@@ -66,6 +70,7 @@ export default function Dish(props) {
   const isDesktop = useBreakpoint("sm");
   const router = useRouter();
   const { id } = router.query;
+  const [isEditingComment, setIsEditingComment] = useState(false);
   const { data: dish, isLoading, error } = useDish(id);
 
   const navbarAndFooterHeight =
@@ -75,6 +80,19 @@ export default function Dish(props) {
   const totalRating = dish?.ratings.reduce((e, r) => e + r.value, 0);
   const averageRating =
     Math.round((totalRating / ratingCount) * 100) / 100 || 0;
+
+  const EditCommentComponent = isEditingComment ? Textarea : Text;
+
+  const {
+    handleSubmit,
+    register,
+    formState: { errors, isSubmitting },
+  } = useForm();
+
+  const handleEditComment = () => {
+    setIsEditingComment(!isEditingComment);
+  };
+
   return (
     <Layout>
       <Container
@@ -144,11 +162,21 @@ export default function Dish(props) {
                 <RatingComponent color="orange.300" isEditable />
               </Stack>
               <Stack id="your-comments">
-                <Heading fontWeight="light" size="lg">
-                  Your comments
-                </Heading>
+                <HStack justify="space-between">
+                  <Heading fontWeight="light" size="lg">
+                    Your comments
+                  </Heading>
+                  <IconButton
+                    aria-label="edit-comment"
+                    onClick={handleEditComment}
+                    icon={
+                      isEditingComment ? <FloppyDisk /> : <EditIcon />
+                    }
+                  />
+                </HStack>
                 <Box position="relative">
-                  <Text
+                  <EditCommentComponent
+                    minH={isEditingComment && "170px"}
                     maxH="170"
                     pb={10}
                     overflowY="scroll"
@@ -177,7 +205,7 @@ export default function Dish(props) {
                     Fugiat nulla pariatur in. Cillum laboris ex
                     pariatur occaecat ea sunt culpa, cillum culpa ex
                     minim laborum ipsum sed elit.
-                  </Text>
+                  </EditCommentComponent>
                 </Box>
               </Stack>
             </Stack>

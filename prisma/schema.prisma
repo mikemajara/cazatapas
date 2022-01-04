@@ -113,21 +113,23 @@ model Image {
 }
 
 model Rating {
-  id     String @id @default(cuid())
-  user   User   @relation(fields: [userId], references: [id])
   value  Float  @default(0)
+  user   User   @relation(fields: [userId], references: [id])
   userId String
-  Dish   Dish?  @relation(fields: [dishId], references: [id])
-  dishId Int?
+  Dish   Dish   @relation(fields: [dishId], references: [id])
+  dishId Int
+
+  @@id([userId, dishId])
 }
 
 model Comment {
-  id        String    @id @default(cuid())
-  user      User      @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
   text      String?
-  userId    String
-  Dish      Dish?     @relation(fields: [dishId], references: [id])
-  dishId    Int?
-  createdAt DateTime? @default(now())
-  updatedAt DateTime? @updatedAt
+  userId    String   @unique
+  Dish      Dish     @relation(fields: [dishId], references: [id])
+  dishId    Int      @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@id([userId, dishId])
 }
