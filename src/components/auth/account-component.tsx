@@ -30,7 +30,7 @@ import { IoIosLogIn, IoIosLogOut } from "react-icons/io";
 import { IoBookmarkOutline } from "react-icons/io5";
 import { useRouter } from "next/dist/client/router";
 
-export default function AccountComponent(props: any) {
+export function AccountComponent(props: any) {
   const { data: session, status } = useSession();
   const router = useRouter();
   const isDesktop = useBreakpointValue({ base: false, sm: true });
