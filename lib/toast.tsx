@@ -5,6 +5,7 @@ import {
   UseToastOptions,
 } from "@chakra-ui/toast";
 import { ReactNode } from "react";
+import { MarkdownComponent } from "@components/markdown-component";
 
 type toastStatus =
   | "success"
@@ -23,12 +24,19 @@ const defaultConfig: UseToastOptions = {
 const toastFactory = (status: toastStatus = "info") => {
   return (
     description: string | ReactNode = "",
-    config: UseToastOptions = {},
+    config: UseToastOptions & { markdown: boolean } = {
+      markdown: true,
+    },
   ) => {
     const toast = createStandaloneToast();
+    const desc = !config.markdown ? (
+      description
+    ) : (
+      <MarkdownComponent>{description}</MarkdownComponent>
+    );
     toast({
       title: status,
-      description,
+      description: desc,
       status,
       ...defaultConfig,
       ...config,

@@ -49,7 +49,8 @@ export const ModalAddDish = (props) => {
     onOpen: onOpenModal,
     onClose: onCloseModal,
   } = useDisclosure();
-  const { data: session, status } = useSession();
+  const { status } = useSession();
+  const router = useRouter();
 
   const [setKeyAddDish, unsetKeyAddDish] =
     useShallowRouteChange("addDish");
@@ -64,15 +65,11 @@ export const ModalAddDish = (props) => {
   }, [props.isOpen]);
 
   const handleOnOpenModal = () => {
-    logger.debug("add-dish.tsx: handleOnOpenModal: status", status);
     if (status === "authenticated") {
       onOpen();
     } else {
       toast.warning(
-        <MarkdownComponent>
-          {/* {"<a href='/auth/signin'>Log in</a> to add a dish."} */}
-          {"[Log in](/auth/signin) to add a dish."}
-        </MarkdownComponent>,
+        `[Log in](/auth/signin?callbackUrl=${router.asPath}) to add a dish.`,
       );
     }
   };

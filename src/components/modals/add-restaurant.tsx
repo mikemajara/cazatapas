@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Modal,
   ModalOverlay,
@@ -24,9 +24,39 @@ import { logger } from "@lib/logger";
 import ImageThumbnailComponent from "@components/cards/image-thumbnail";
 import { useForm } from "react-hook-form";
 import ky from "ky";
+import { useSession } from "next-auth/react";
+import { useShallowRouteChange } from "@hooks/use-shallow-route-change";
+import { toast } from "@lib/toast";
+import { useRouter } from "next/router";
 
 export const ModalAddRestaurant = (props) => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen,
+    onOpen: onOpenModal,
+    onClose: onCloseModal,
+  } = useDisclosure();
+  const { status } = useSession();
+  const router = useRouter();
+
+  const [setKeyAddRestaurant, unsetKeyAddRestaurant] =
+    useShallowRouteChange("addRestaurant");
+
+  const onOpen = () => setKeyAddRestaurant(true, onOpenModal);
+  const onClose = () => unsetKeyAddRestaurant(onCloseModal);
+
+  useEffect(() => {
+    if (props.isOpen) {
+      onOpenModal();
+    }
+  }, [props.isOpen]);
+
+  const handleOnOpenModal =
+    status === "authenticated"
+      ? onOpen
+      : toast.warning(
+          `[Log in](/auth/signin?callbackUrl=${router.asPath}) to add a restaurant.`,
+        );
+
   // react-hook-form
   const { handleSubmit, register, reset } = useForm();
 
@@ -108,7 +138,9 @@ export const ModalAddRestaurant = (props) => {
   });
   return (
     <>
-      {React.cloneElement(props.button, { onClick: onOpen })}
+      {React.cloneElement(props.button, {
+        onClick: handleOnOpenModal,
+      })}
       <Modal
         isOpen={isOpen}
         onClose={onClose}
