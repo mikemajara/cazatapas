@@ -17,7 +17,7 @@ import {
   useBreakpointValue,
 } from "@chakra-ui/react";
 import NextLink from "next/link";
-import { signIn, useSession } from "next-auth/react";
+import { signIn, signOut, useSession } from "next-auth/react";
 import React from "react";
 import { AIcon } from "../chakra-animated-components";
 // icons
@@ -77,7 +77,9 @@ export function AccountComponent(props: any) {
     },
     {
       label: "Log out",
-      href: "/auth/signout",
+      onClick: () => {
+        signOut({ callbackUrl: router.pathname });
+      },
       icon: <IoIosLogOut />,
       isVisible: !!session,
     },
@@ -133,7 +135,7 @@ export function AccountComponent(props: any) {
               <MenuDivider key={item.label} />
             ) : (
               <NextLink
-                href={item.href}
+                href={item.href || ""}
                 passHref={!item.onClick}
                 key={item.label}
               >

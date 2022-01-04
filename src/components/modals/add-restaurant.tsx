@@ -50,12 +50,15 @@ export const ModalAddRestaurant = (props) => {
     }
   }, [props.isOpen]);
 
-  const handleOnOpenModal =
-    status === "authenticated"
-      ? onOpen
-      : toast.warning(
-          `[Log in](/auth/signin?callbackUrl=${router.asPath}) to add a restaurant.`,
-        );
+  const handleOnOpenModal = () => {
+    if (status === "authenticated") {
+      onOpen();
+    } else if (status === "unauthenticated") {
+      toast.warning(
+        `[Log in](/auth/signin?callbackUrl=${router.asPath}) to add a restaurant.`,
+      );
+    }
+  };
 
   // react-hook-form
   const { handleSubmit, register, reset } = useForm();
