@@ -52,7 +52,10 @@ async function handlePOST(email, req, res) {
         },
       },
     },
-    include: { ratings: { include: { user: true } } },
+    include: {
+      ratings: { include: { user: true } },
+      comments: { include: { user: true } },
+    },
   });
-  res.json(dish);
+  res.json(dish.comments.find((c) => c.userId === user.id));
 }

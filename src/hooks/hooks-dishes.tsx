@@ -32,13 +32,10 @@ export const useSaveRating = (dishId) => {
 };
 
 export const useSaveComment = (dishId, fn) => {
-  logger.debug(`creating mutation with ${dishId}`);
   return useMutation(
     (json) => {
       return ky
-        .post(`/api/dishes/comment?id=${dishId}`, {
-          json: { comment: "hola" },
-        })
+        .post(`/api/dishes/comment?id=${dishId}`, { json })
         .json();
     },
     {

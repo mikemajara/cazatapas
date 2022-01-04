@@ -34,7 +34,7 @@ import NextLink from "next/link";
 import { EditIcon, ExternalLinkIcon } from "@chakra-ui/icons";
 import { Tag } from "@components/tag";
 import { format } from "date-fns";
-import { FloppyDisk } from "phosphor-react";
+import { X, FloppyDisk } from "phosphor-react";
 import { useForm } from "react-hook-form";
 import ky from "ky";
 import { useMutation } from "react-query";
@@ -84,9 +84,17 @@ export default function Dish(props) {
   const [isEditingComment, setIsEditingComment] = useState(false);
   const { data: dish, isLoading, error } = useDish(id);
 
-  // const mutationComment = useSaveComment(id, (value) => {
-  //   reset({ comment: value });
-  // });
+  const mutationComment = useSaveComment(id, (value) => {
+    logger.debug(
+      `dishes/[id].tsx:Dish:mutationComment:onSuccess:value`,
+      value,
+    );
+    reset({ comment: value.text });
+  });
+
+  React.useEffect(() => {
+    mutationComment.reset();
+  }, []);
 
   const navbarAndFooterHeight =
     navbarHeight + (isDesktop ? footerHeight : footerHeightBase);
@@ -98,40 +106,8 @@ export default function Dish(props) {
 
   const EditCommentComponent = isEditingComment ? Textarea : Text;
 
-  const {
-    handleSubmit,
-    register,
-    reset,
-    getValues,
-    formState: { errors, isSubmitting },
-  } = useForm({
-    defaultValues: { comment: "hola" },
-  });
-
-  const mutationComment = useMutation(
-    async (json) => {
-      logger.debug(
-        `dishes/[id].tsx:Dish:mutationComment:values`,
-        json,
-      );
-      const res = await ky
-        .post(`/api/dishes/comment?id=${id}`, {
-          json,
-        })
-        .json();
-      logger.debug(`dishes/[id].tsx:Dish:mutationComment:res`, res);
-      return res;
-    },
-    {
-      onSuccess: (value) => {
-        logger.debug(
-          `dishes/[id].tsx:Dish:mutationComment:onSuccess:value`,
-          value,
-        );
-        reset({ comment: value as string });
-      },
-    },
-  );
+  const { handleSubmit, register, reset, getValues, formState } =
+    useForm();
 
   const handleEditComment = () => {
     setIsEditingComment(!isEditingComment);
@@ -216,18 +192,28 @@ export default function Dish(props) {
                     <Heading fontWeight="light" size="lg">
                       Your comments
                     </Heading>
-                    <IconButton
-                      aria-label="edit-comment"
-                      onClick={handleEditComment}
-                      type="submit"
-                      icon={
-                        isEditingComment ? (
-                          <FloppyDisk />
-                        ) : (
-                          <EditIcon />
-                        )
-                      }
-                    />
+                    <HStack>
+                      <IconButton
+                        aria-label="edit-comment"
+                        onClick={handleEditComment}
+                        type="submit"
+                        icon={
+                          isEditingComment ? (
+                            <FloppyDisk />
+                          ) : (
+                            <EditIcon />
+                          )
+                        }
+                      />
+                      {isEditingComment && (
+                        <IconButton
+                          aria-label="edit-comment"
+                          onClick={handleEditComment}
+                          type="submit"
+                          icon={<X />}
+                        />
+                      )}
+                    </HStack>
                   </HStack>
                   <Box position="relative">
                     <EditCommentComponent
@@ -243,7 +229,7 @@ export default function Dish(props) {
                         backgroundImage:
                           "linear-gradient(0deg, rgba(255,255,255,1) 0%, rgba(0,97,255,0) 19%);",
                       }}
-                      children={getValues("comment")}
+                      children={mutationComment.data?.text}
                       {...register("comment")}
                     />
                   </Box>
