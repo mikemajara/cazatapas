@@ -1,8 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Dish, Restaurant } from "@prisma/client";
-import { useMutation, useQuery } from "react-query";
+import {
+  QueryClient,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "react-query";
 import ky from "ky";
 import { DishInclude, RestaurantInclude } from "prisma/model";
+import { Comment } from "@prisma/client";
 import { logger } from "@lib/logger";
 
 export const useAllDishes = () => {
@@ -20,7 +26,20 @@ export const useDish = (id) => {
   const { data, isLoading, error } = useQuery<DishInclude>(
     `/api/dishes/${id}`,
     () => ky.get(`/api/dishes/${id}`).json(),
-    { onSuccess: (data) => setResult(data) },
+    { onSuccess: (data) => setResult(data), enabled: !!id },
+  );
+  return { data: result, isLoading, error };
+};
+
+export const useDishComment = (dishId) => {
+  const [result, setResult] = useState<Comment>();
+  const { data, isLoading, error } = useQuery<Comment>(
+    `/api/comments?dishId=${dishId}`,
+    () => ky.get(`/api/comments?dishId=${dishId}`).json(),
+    {
+      onSuccess: (data) => setResult(data),
+      enabled: !!dishId,
+    },
   );
   return { data: result, isLoading, error };
 };
@@ -31,15 +50,22 @@ export const useSaveRating = (dishId) => {
   });
 };
 
-export const useSaveComment = (dishId, fn) => {
+export const useSaveComment = (dishId) => {
+  const queryClient = useQueryClient();
   return useMutation(
     (json) => {
-      return ky
-        .post(`/api/dishes/comment?id=${dishId}`, { json })
-        .json();
+      return ky.post(`/api/dishes/comment?id=${dishId}`, { json });
     },
     {
-      onSuccess: fn,
+      onSuccess: async () => {
+        await queryClient.refetchQueries(
+          [`/api/comments?id=${dishId}`],
+          {
+            active: true,
+          },
+        );
+        // queryClient.invalidateQueries(`/api/comments?id=${dishId}`);
+      },
     },
   );
 };

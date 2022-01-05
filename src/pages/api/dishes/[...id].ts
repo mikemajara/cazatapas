@@ -22,10 +22,10 @@ export default async function handle(
   // }
   const id = req.query.id;
   if (req.method === "GET") {
-    logger.debug(`[...id].tsx:${id}:req.query`, req.query);
+    // logger.debug(`[...id].tsx:${id}:req.query`, req.query);
     await handleGET(id, req, res);
   } else if (req.method === "POST") {
-    logger.debug(`[...id].tsx:${id}:req.query`, req.query);
+    // logger.debug(`[...id].tsx:${id}:req.query`, req.query);
     await handlePOST(id, req, res);
   } else if (req.method === "DELETE") {
     await handleDELETE(id, req, res);

@@ -20,8 +20,12 @@ export default async function handle(
       res.status(401).end();
     }
   }
-  if (req.method === "POST") {
-    await handlePOST(session.user.email, req, res);
+  if (req.method === "GET") {
+    logger.debug(
+      `comments/index.ts:${req.query.dishId}:req.query`,
+      req.query,
+    );
+    await handleGET(session.user.email, req, res);
   } else {
     res
       .status(405)
@@ -31,31 +35,38 @@ export default async function handle(
   }
 }
 
-// POST /api/dishes/comment/:id?
-async function handlePOST(email, req, res) {
-  const id = parseInt(req.query.id);
-  const { comment } = req.body;
+const defaultInclude = {
+  images: true,
+  ratings: true,
+  tags: true,
+};
 
+// GET /api/dishes/:id?
+async function handleGET(
+  email,
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
+  const id = req.query.dishId.toString();
+  logger.debug(`comments/index.ts:handleGET:id`, id);
+  const dishId = parseInt(id);
+  logger.debug(`comments/index.ts:handleGET:dishId`, dishId);
   const user = await prisma.user.findUnique({
     where: { email },
   });
-  logger.debug(`comment.ts:user.id`, user.id);
-  logger.debug(`comment.ts:dishId`, id);
-  const dish = await prisma.dish.update({
-    where: { id },
-    data: {
+  const dish = await prisma.dish.findUnique({
+    where: { id: 1 },
+    include: {
+      ...defaultInclude,
+      restaurant: true,
+      ratings: true,
       comments: {
-        upsert: {
-          where: { userId_dishId: { userId: user.id, dishId: id } },
-          create: { userId: user.id, text: comment },
-          update: { userId: user.id, text: comment },
-        },
+        where: { userId: user.id },
+        include: { user: true },
       },
     },
-    include: {
-      ratings: { include: { user: true } },
-      comments: { include: { user: true } },
-    },
   });
-  res.json(dish.comments.find((c) => c.userId === user.id));
+  res.json(
+    dish.comments.find((comment) => comment.userId === user.id),
+  );
 }
