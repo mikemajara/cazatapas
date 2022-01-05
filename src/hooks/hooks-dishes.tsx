@@ -54,17 +54,19 @@ export const useSaveComment = (dishId) => {
   const queryClient = useQueryClient();
   return useMutation(
     (json) => {
-      return ky.post(`/api/dishes/comment?id=${dishId}`, { json });
+      return ky.post(`/api/dishes/comment?id=${dishId}`, {
+        json,
+      });
     },
     {
-      onSuccess: async () => {
-        await queryClient.refetchQueries(
-          [`/api/comments?id=${dishId}`],
+      onSuccess: () => {
+        queryClient.invalidateQueries(
+          `/api/comments?dishId=${dishId}`,
           {
-            active: true,
+            exact: true,
+            refetchInactive: false,
           },
         );
-        // queryClient.invalidateQueries(`/api/comments?id=${dishId}`);
       },
     },
   );

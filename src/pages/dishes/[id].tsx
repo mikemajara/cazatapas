@@ -14,6 +14,7 @@ import {
   Avatar,
   IconButton,
   Textarea,
+  SkeletonText,
 } from "@chakra-ui/react";
 import { Layout } from "@components/layout";
 import {
@@ -39,6 +40,7 @@ import { X, FloppyDisk } from "phosphor-react";
 import { useForm } from "react-hook-form";
 import ky from "ky";
 import { useMutation } from "react-query";
+import { useHotkeys } from "react-hotkeys-hook";
 
 const IMAGE_LOCATION = "/images/dishes";
 
@@ -71,17 +73,20 @@ export default function Dish(props) {
       defaultValues: { comment: commentData?.text },
     });
 
-  const handleEditComment = () => {
+  const toggleEditComment = () => {
     setIsEditingComment(!isEditingComment);
   };
 
   const onSaveComment = (values) => {
-    // logger.debug("dishes/[id].tsx: onSaveComment: values", values);
-    mutationComment.mutate(values);
+    mutationComment.mutate(values, {
+      onSuccess: toggleEditComment,
+    });
   };
 
-  const EditCommentComponent = isEditingComment ? Textarea : Text;
-  logger.debug(`dishes/[id].tsx:commentData`, commentData);
+  useHotkeys("cmd+enter", () => onSaveComment(getValues()), {
+    enableOnTags: ["TEXTAREA"],
+    enabled: isEditingComment,
+  });
   return (
     <Layout>
       <Container
@@ -159,8 +164,8 @@ export default function Dish(props) {
                     <HStack>
                       <IconButton
                         aria-label="edit-comment"
-                        onClick={handleEditComment}
                         type="submit"
+                        isLoading={mutationComment.isLoading}
                         icon={
                           isEditingComment ? (
                             <FloppyDisk />
@@ -172,7 +177,7 @@ export default function Dish(props) {
                       {isEditingComment && (
                         <IconButton
                           aria-label="edit-comment"
-                          onClick={handleEditComment}
+                          onClick={toggleEditComment}
                           type="submit"
                           icon={<X />}
                         />
@@ -197,6 +202,8 @@ export default function Dish(props) {
                         children={commentData?.text}
                         {...register("comment")}
                       />
+                    ) : isLoadingComment ? (
+                      <SkeletonText noOfLines={4} spacing="4" />
                     ) : (
                       <Text>{commentData?.text}</Text>
                     )}
