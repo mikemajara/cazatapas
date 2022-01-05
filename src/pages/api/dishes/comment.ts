@@ -39,8 +39,7 @@ async function handlePOST(email, req, res) {
   const user = await prisma.user.findUnique({
     where: { email },
   });
-  logger.debug(`comment.ts:user.id`, user.id);
-  logger.debug(`comment.ts:dishId`, id);
+
   const dish = await prisma.dish.update({
     where: { id },
     data: {
@@ -53,7 +52,6 @@ async function handlePOST(email, req, res) {
       },
     },
     include: {
-      ratings: { include: { user: true } },
       comments: { include: { user: true } },
     },
   });

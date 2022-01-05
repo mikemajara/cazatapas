@@ -20,8 +20,8 @@ export default async function handle(
       res.status(401).end();
     }
   }
-  if (req.method === "POST") {
-    await handlePOST(session.user.email, req, res);
+  if (req.method === "GET") {
+    await handleGET(session.user.email, req, res);
   } else {
     res
       .status(405)
@@ -31,28 +31,31 @@ export default async function handle(
   }
 }
 
-// POST /api/dishes/rate/:id?
-async function handlePOST(email, req, res) {
-  const id = parseInt(req.query.dishId);
-  logger.debug("rate.ts: handlePOST: req.body: ", req.body);
-  const { rating } = req.body;
+const defaultInclude = {
+  images: true,
+  ratings: true,
+  tags: true,
+};
 
+// GET /api/dishes/:id?
+async function handleGET(
+  email,
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
+  const id = req.query.dishId.toString();
+  const dishId = parseInt(id);
   const user = await prisma.user.findUnique({
     where: { email },
   });
-
-  const dish = await prisma.dish.update({
-    where: { id },
-    data: {
+  const dish = await prisma.dish.findUnique({
+    where: { id: 1 },
+    include: {
       ratings: {
-        upsert: {
-          where: { userId_dishId: { userId: user.id, dishId: id } },
-          update: { userId: user.id, value: rating },
-          create: { userId: user.id, value: rating },
-        },
+        where: { userId: user.id },
+        include: { user: true },
       },
     },
-    include: { ratings: { include: { user: true } } },
   });
   res.json(dish.ratings.find((r) => r.userId === user.id));
 }

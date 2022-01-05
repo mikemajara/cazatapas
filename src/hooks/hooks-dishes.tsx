@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Dish, Restaurant } from "@prisma/client";
+import { Dish, Rating, Restaurant } from "@prisma/client";
 import {
   QueryClient,
   useMutation,
@@ -44,10 +44,17 @@ export const useDishComment = (dishId) => {
   return { data: result, isLoading, error };
 };
 
-export const useSaveRating = (dishId) => {
-  return useMutation((json) => {
-    return ky.post(`/api/dishes/rate/${dishId}`, { json });
-  });
+export const useDishRating = (dishId) => {
+  const [result, setResult] = useState<Rating>();
+  const { data, isLoading, error } = useQuery<Rating>(
+    `/api/ratings?dishId=${dishId}`,
+    () => ky.get(`/api/ratings?dishId=${dishId}`).json(),
+    {
+      onSuccess: (data) => setResult(data),
+      enabled: !!dishId,
+    },
+  );
+  return { data: result, isLoading, error };
 };
 
 export const useSaveComment = (dishId) => {
@@ -62,6 +69,29 @@ export const useSaveComment = (dishId) => {
       onSuccess: () => {
         queryClient.invalidateQueries(
           `/api/comments?dishId=${dishId}`,
+          {
+            exact: true,
+            refetchInactive: false,
+          },
+        );
+      },
+    },
+  );
+};
+
+export const useSaveRating = (dishId) => {
+  const queryClient = useQueryClient();
+  return useMutation(
+    (json) => {
+      logger.debug("hooks-dishes.tsx:useSaveRating:json", json);
+      return ky.post(`/api/dishes/rate?dishId=${dishId}`, {
+        json,
+      });
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(
+          `/api/ratings?dishId=${dishId}`,
           {
             exact: true,
             refetchInactive: false,

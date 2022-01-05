@@ -26,6 +26,7 @@ import { RatingComponent } from "@components/rating-component";
 import {
   useDish,
   useDishComment,
+  useDishRating,
   useSaveComment,
   useSaveRating,
 } from "@hooks/hooks-dishes";
@@ -48,17 +49,19 @@ export default function Dish(props) {
   const isDesktop = useBreakpoint("sm");
   const router = useRouter();
   const { id: dishId } = router.query;
-  logger.debug(
-    `dishes/[id].tsx:Dish:router.query.id`,
-    router.query.id,
-  );
+  // logger.debug(
+  //   `dishes/[id].tsx:Dish:router.query.id`,
+  //   router.query.id,
+  // );
 
   const [isEditingComment, setIsEditingComment] = useState(false);
   const { data: dish, isLoading, error } = useDish(dishId);
 
   const { data: commentData, isLoading: isLoadingComment } =
     useDishComment(dishId);
+  const { data: ratingData } = useDishRating(dishId);
   const mutationComment = useSaveComment(dishId);
+  const mutationRating = useSaveRating(dishId);
 
   const navbarAndFooterHeight =
     navbarHeight + (isDesktop ? footerHeight : footerHeightBase);
@@ -78,9 +81,15 @@ export default function Dish(props) {
   };
 
   const onSaveComment = (values) => {
+    logger.debug("dishes/[id].tsx:Dish:onSaveComment", values);
     mutationComment.mutate(values, {
       onSuccess: toggleEditComment,
     });
+  };
+
+  const onSaveRating = (values) => {
+    logger.debug("dishes/[id].tsx:Dish:onSaveRating", values);
+    mutationRating.mutate(values);
   };
 
   useHotkeys("cmd+enter", () => onSaveComment(getValues()), {
@@ -153,7 +162,12 @@ export default function Dish(props) {
                 <Heading fontWeight="light" size="lg">
                   Your rating
                 </Heading>
-                <RatingComponent color="orange.300" isEditable />
+                <RatingComponent
+                  color="orange.300"
+                  isEditable
+                  rating={ratingData?.value}
+                  onClick={onSaveRating}
+                />
               </Stack>
               <Stack id="your-comments">
                 <form onSubmit={handleSubmit(onSaveComment)}>
