@@ -14,7 +14,7 @@ export const getEmailAndApiKeyFromHeader = (req: NextApiRequest) => {
     const [email, apiKey] = atob(encryptedApiKey).split(":");
     return { user: { email, apiKey } };
   }
-  return null;
+  return {};
 };
 
 export const isUserAuthorizedWithApiKey = async (

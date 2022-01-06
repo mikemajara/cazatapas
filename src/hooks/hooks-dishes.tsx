@@ -38,7 +38,13 @@ export const useDishComment = (dishId) => {
     () => ky.get(`/api/comments?dishId=${dishId}`).json(),
     {
       onSuccess: (data) => setResult(data),
+      refetchOnWindowFocus: false,
       enabled: !!dishId,
+      retry: (failureCount, error) => {
+        if (error.response.status === 401 || failureCount > 3)
+          return false;
+        return true;
+      },
     },
   );
   return { data: result, isLoading, error };

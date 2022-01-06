@@ -29,6 +29,7 @@ import { BsGear } from "react-icons/bs";
 import { IoIosLogIn, IoIosLogOut } from "react-icons/io";
 import { IoBookmarkOutline } from "react-icons/io5";
 import { useRouter } from "next/dist/client/router";
+import { logger } from "@lib/logger";
 
 export function AccountComponent(props: any) {
   const { data: session, status } = useSession();
@@ -65,20 +66,20 @@ export function AccountComponent(props: any) {
     },
     {
       label: "Register",
-      href: "/auth/register",
+      href: "/auth/signup",
       icon: <BiRegistered />,
       isVisible: !session,
     },
     {
       label: "Sign in",
-      href: `/auth/signin?callbackUrl=${router.pathname}`,
+      href: `/auth/signin?callbackUrl=${router.asPath}`,
       icon: <IoIosLogIn />,
       isVisible: !session,
     },
     {
       label: "Log out",
       onClick: () => {
-        signOut({ callbackUrl: router.pathname });
+        signOut({ callbackUrl: router.asPath });
       },
       icon: <IoIosLogOut />,
       isVisible: !!session,

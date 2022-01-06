@@ -42,6 +42,7 @@ import { useForm } from "react-hook-form";
 import ky from "ky";
 import { useMutation } from "react-query";
 import { useHotkeys } from "react-hotkeys-hook";
+import { CommentComponent } from "@components/edit-components/comment-component";
 
 const IMAGE_LOCATION = "/images/dishes";
 
@@ -49,18 +50,10 @@ export default function Dish(props) {
   const isDesktop = useBreakpoint("sm");
   const router = useRouter();
   const { id: dishId } = router.query;
-  // logger.debug(
-  //   `dishes/[id].tsx:Dish:router.query.id`,
-  //   router.query.id,
-  // );
 
-  const [isEditingComment, setIsEditingComment] = useState(false);
   const { data: dish, isLoading, error } = useDish(dishId);
 
-  const { data: commentData, isLoading: isLoadingComment } =
-    useDishComment(dishId);
   const { data: ratingData } = useDishRating(dishId);
-  const mutationComment = useSaveComment(dishId);
   const mutationRating = useSaveRating(dishId);
 
   const navbarAndFooterHeight =
@@ -71,31 +64,11 @@ export default function Dish(props) {
   const averageRating =
     Math.round((totalRating / ratingCount) * 100) / 100 || 0;
 
-  const { handleSubmit, register, reset, getValues, formState } =
-    useForm({
-      defaultValues: { comment: commentData?.text },
-    });
-
-  const toggleEditComment = () => {
-    setIsEditingComment(!isEditingComment);
-  };
-
-  const onSaveComment = (values) => {
-    logger.debug("dishes/[id].tsx:Dish:onSaveComment", values);
-    mutationComment.mutate(values, {
-      onSuccess: toggleEditComment,
-    });
-  };
-
   const onSaveRating = (value) => {
     logger.debug("dishes/[id].tsx:Dish:onSaveRating", value);
     mutationRating.mutate({ rating: value });
   };
 
-  useHotkeys("cmd+enter", () => onSaveComment(getValues()), {
-    enableOnTags: ["TEXTAREA"],
-    enabled: isEditingComment,
-  });
   return (
     <Layout>
       <Container
@@ -169,61 +142,7 @@ export default function Dish(props) {
                   onClick={onSaveRating}
                 />
               </Stack>
-              <Stack id="your-comments">
-                <form onSubmit={handleSubmit(onSaveComment)}>
-                  <HStack justify="space-between">
-                    <Heading fontWeight="light" size="lg">
-                      Your comments
-                    </Heading>
-                    <HStack>
-                      <IconButton
-                        aria-label="edit-comment"
-                        type="submit"
-                        isLoading={mutationComment.isLoading}
-                        icon={
-                          isEditingComment ? (
-                            <FloppyDisk />
-                          ) : (
-                            <EditIcon />
-                          )
-                        }
-                      />
-                      {isEditingComment && (
-                        <IconButton
-                          aria-label="edit-comment"
-                          onClick={toggleEditComment}
-                          type="submit"
-                          icon={<X />}
-                        />
-                      )}
-                    </HStack>
-                  </HStack>
-                  <Box position="relative">
-                    {isEditingComment ? (
-                      <Textarea
-                        minH={isEditingComment && "170px"}
-                        maxH="170"
-                        pb={10}
-                        overflowY="scroll"
-                        _before={{
-                          content: `""`,
-                          position: "absolute",
-                          w: "100%",
-                          h: "100%",
-                          backgroundImage:
-                            "linear-gradient(0deg, rgba(255,255,255,1) 0%, rgba(0,97,255,0) 19%);",
-                        }}
-                        children={commentData?.text}
-                        {...register("comment")}
-                      />
-                    ) : isLoadingComment ? (
-                      <SkeletonText noOfLines={4} spacing="4" />
-                    ) : (
-                      <Text>{commentData?.text}</Text>
-                    )}
-                  </Box>
-                </form>
-              </Stack>
+              <CommentComponent dishId={dishId} />
             </Stack>
             <Stack>
               <Heading>Comments</Heading>

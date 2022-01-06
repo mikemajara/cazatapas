@@ -18,14 +18,11 @@ export default async function handle(
     const isAuthorized = await isUserAuthorizedWithApiKey(req);
     if (!isAuthorized) {
       res.status(401).end();
+      // return;
     }
   }
   if (req.method === "GET") {
-    logger.debug(
-      `comments/index.ts:${req.query.dishId}:req.query`,
-      req.query,
-    );
-    await handleGET(session.user.email, req, res);
+    await handleGET(session.user?.email, req, res);
   } else {
     res
       .status(405)
