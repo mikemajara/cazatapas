@@ -87,9 +87,9 @@ export default function Dish(props) {
     });
   };
 
-  const onSaveRating = (values) => {
-    logger.debug("dishes/[id].tsx:Dish:onSaveRating", values);
-    mutationRating.mutate(values);
+  const onSaveRating = (value) => {
+    logger.debug("dishes/[id].tsx:Dish:onSaveRating", value);
+    mutationRating.mutate({ rating: value });
   };
 
   useHotkeys("cmd+enter", () => onSaveComment(getValues()), {

@@ -21,6 +21,11 @@ export const RatingComponent = (props) => {
     .fill(1)
     .concat(Array(5 - value).fill(0));
 
+  const handleSetValue = (value) => {
+    setValue(value);
+    onClick(value);
+  };
+
   return (
     <HStack>
       <HStack>
@@ -32,14 +37,19 @@ export const RatingComponent = (props) => {
             weight={e ? "fill" : "regular"}
             key={i}
             onClick={() => {
-              onClick({ rating: i + 1 });
+              handleSetValue(i + 1);
             }}
             cursor="pointer"
           />
         ))}
       </HStack>
       {isEditable && (
-        <Button size="xs" onClick={() => setValue(0)}>
+        <Button
+          size="xs"
+          onClick={() => {
+            handleSetValue(0);
+          }}
+        >
           Clear
         </Button>
       )}
