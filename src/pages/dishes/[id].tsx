@@ -42,7 +42,7 @@ import { useForm } from "react-hook-form";
 import ky from "ky";
 import { useMutation } from "react-query";
 import { useHotkeys } from "react-hotkeys-hook";
-import { CommentComponent } from "@components/edit-components/comment-component";
+import { CommentComponent } from "@components/edit-components/comment-dish-component";
 
 const IMAGE_LOCATION = "/images/dishes";
 
