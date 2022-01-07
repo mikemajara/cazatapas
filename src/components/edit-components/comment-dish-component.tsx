@@ -21,8 +21,9 @@ import { useForm } from "react-hook-form";
 import { useHotkeys } from "react-hotkeys-hook";
 import { IoIosLogIn } from "react-icons/io";
 import { useRouter } from "next/router";
+import { LoginButton } from "@components/auth/login-button";
 
-export const CommentComponent = (props) => {
+export const CommentDishComponent = (props) => {
   const { dishId } = props;
   const { status } = useSession();
   const router = useRouter();
@@ -77,16 +78,10 @@ export const CommentComponent = (props) => {
         </HStack>
         <Box position="relative">
           {status === "unauthenticated" ? (
-            <Flex justify="center" align="center" minH={100}>
-              <NextLink
-                href={`/auth/signin?callbackUrl=${router.asPath}`}
-                passHref
-              >
-                <ChakraLink as={Button} iconLeft={<IoIosLogIn />}>
-                  Log in
-                </ChakraLink>
-              </NextLink>
-            </Flex>
+            <LoginButton
+              justify="start"
+              children="Log in to comment"
+            />
           ) : isEditingComment ? (
             <Textarea
               minH={isEditingComment && "170px"}

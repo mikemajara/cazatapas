@@ -15,10 +15,8 @@ export default async function handle(
   // authorization
   const session = await getSession({ req });
   if (!session) {
-    const isAuthorized = await isUserAuthorizedWithApiKey(req);
-    if (!isAuthorized) {
-      res.status(401).end();
-    }
+    res.status(401).end();
+    return;
   }
   if (req.method === "GET") {
     await handleGET(session.user.email, req, res);

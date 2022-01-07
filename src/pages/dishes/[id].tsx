@@ -42,7 +42,8 @@ import { useForm } from "react-hook-form";
 import ky from "ky";
 import { useMutation } from "react-query";
 import { useHotkeys } from "react-hotkeys-hook";
-import { CommentComponent } from "@components/edit-components/comment-dish-component";
+import { CommentDishComponent } from "@components/edit-components/comment-dish-component";
+import { RatingDishComponent } from "@components/edit-components/rating-dish-component";
 
 const IMAGE_LOCATION = "/images/dishes";
 
@@ -53,9 +54,6 @@ export default function Dish(props) {
 
   const { data: dish, isLoading, error } = useDish(dishId);
 
-  const { data: ratingData } = useDishRating(dishId);
-  const mutationRating = useSaveRating(dishId);
-
   const navbarAndFooterHeight =
     navbarHeight + (isDesktop ? footerHeight : footerHeightBase);
 
@@ -63,11 +61,6 @@ export default function Dish(props) {
   const totalRating = dish?.ratings.reduce((e, r) => e + r.value, 0);
   const averageRating =
     Math.round((totalRating / ratingCount) * 100) / 100 || 0;
-
-  const onSaveRating = (value) => {
-    logger.debug("dishes/[id].tsx:Dish:onSaveRating", value);
-    mutationRating.mutate({ rating: value });
-  };
 
   return (
     <Layout>
@@ -131,18 +124,8 @@ export default function Dish(props) {
                   </Stack>
                 </Stack>
               </Stack>
-              <Stack id="your-rating">
-                <Heading fontWeight="light" size="lg">
-                  Your rating
-                </Heading>
-                <RatingComponent
-                  color="orange.300"
-                  isEditable
-                  rating={ratingData?.value}
-                  onClick={onSaveRating}
-                />
-              </Stack>
-              <CommentComponent dishId={dishId} />
+              <RatingDishComponent dishId={dishId} />
+              <CommentDishComponent dishId={dishId} />
             </Stack>
             <Stack>
               <Heading>Comments</Heading>
