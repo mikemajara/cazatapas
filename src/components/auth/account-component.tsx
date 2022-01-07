@@ -17,7 +17,7 @@ import {
   useBreakpointValue,
 } from "@chakra-ui/react";
 import NextLink from "next/link";
-import { signIn, useSession } from "next-auth/react";
+import { signIn, signOut, useSession } from "next-auth/react";
 import React from "react";
 import { AIcon } from "../chakra-animated-components";
 // icons
@@ -29,8 +29,9 @@ import { BsGear } from "react-icons/bs";
 import { IoIosLogIn, IoIosLogOut } from "react-icons/io";
 import { IoBookmarkOutline } from "react-icons/io5";
 import { useRouter } from "next/dist/client/router";
+import { logger } from "@lib/logger";
 
-export default function AccountComponent(props: any) {
+export function AccountComponent(props: any) {
   const { data: session, status } = useSession();
   const router = useRouter();
   const isDesktop = useBreakpointValue({ base: false, sm: true });
@@ -65,19 +66,21 @@ export default function AccountComponent(props: any) {
     },
     {
       label: "Register",
-      href: "/auth/register",
+      href: "/auth/signup",
       icon: <BiRegistered />,
       isVisible: !session,
     },
     {
       label: "Sign in",
-      href: `/auth/signin?callbackUrl=${router.pathname}`,
+      href: `/auth/signin?callbackUrl=${router.asPath}`,
       icon: <IoIosLogIn />,
       isVisible: !session,
     },
     {
       label: "Log out",
-      href: "/auth/signout",
+      onClick: () => {
+        signOut({ callbackUrl: router.asPath });
+      },
       icon: <IoIosLogOut />,
       isVisible: !!session,
     },
@@ -133,7 +136,7 @@ export default function AccountComponent(props: any) {
               <MenuDivider key={item.label} />
             ) : (
               <NextLink
-                href={item.href}
+                href={item.href || ""}
                 passHref={!item.onClick}
                 key={item.label}
               >

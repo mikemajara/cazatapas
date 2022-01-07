@@ -4,7 +4,12 @@ import React, { useEffect, useState } from "react";
 
 export const RatingComponent = (props) => {
   const [value, setValue] = useState(0);
-  const { rating = 0, isEditable = false, color = "black" } = props;
+  const {
+    rating = 0,
+    isEditable = false,
+    color = "black",
+    onClick,
+  } = props;
   const starCount = Math.round(rating);
   useEffect(() => {
     if (starCount) {
@@ -15,6 +20,12 @@ export const RatingComponent = (props) => {
   const starArray = Array(value)
     .fill(1)
     .concat(Array(5 - value).fill(0));
+
+  const handleSetValue = (value) => {
+    setValue(value);
+    onClick(value);
+  };
+
   return (
     <HStack>
       <HStack>
@@ -26,14 +37,19 @@ export const RatingComponent = (props) => {
             weight={e ? "fill" : "regular"}
             key={i}
             onClick={() => {
-              setValue(i + 1);
+              handleSetValue(i + 1);
             }}
             cursor="pointer"
           />
         ))}
       </HStack>
       {isEditable && (
-        <Button size="xs" onClick={() => setValue(0)}>
+        <Button
+          size="xs"
+          onClick={() => {
+            handleSetValue(0);
+          }}
+        >
           Clear
         </Button>
       )}

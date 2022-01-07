@@ -4,6 +4,8 @@ import {
   ToastPositionWithLogical,
   UseToastOptions,
 } from "@chakra-ui/toast";
+import { ReactNode } from "react";
+import { MarkdownComponent } from "@components/markdown-component";
 
 type toastStatus =
   | "success"
@@ -13,17 +15,28 @@ type toastStatus =
   | undefined;
 
 const defaultConfig: UseToastOptions = {
-  duration: 9000,
+  duration: 19000,
   isClosable: true,
   position: "bottom-right",
+  variant: "subtle",
 };
 
 const toastFactory = (status: toastStatus = "info") => {
-  return (description: string = "", config: UseToastOptions = {}) => {
+  return (
+    description: string | ReactNode = "",
+    config: UseToastOptions & { markdown: boolean } = {
+      markdown: true,
+    },
+  ) => {
     const toast = createStandaloneToast();
+    const desc = !config.markdown ? (
+      description
+    ) : (
+      <MarkdownComponent>{description}</MarkdownComponent>
+    );
     toast({
       title: status,
-      description,
+      description: desc,
       status,
       ...defaultConfig,
       ...config,

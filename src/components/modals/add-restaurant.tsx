@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Modal,
   ModalOverlay,
@@ -9,43 +9,59 @@ import {
   ModalCloseButton,
   FormControl,
   FormLabel,
-  FormErrorMessage,
   FormHelperText,
   Button,
-  Text,
   useDisclosure,
-  HStack,
   Input,
   Stack,
-  IconButton,
-  Textarea,
   Flex,
   Icon,
   SimpleGrid,
 } from "@chakra-ui/react";
-import { Camera } from "phosphor-react";
-import { RatingComponent } from "@components/rating-component";
 import { IoIosAdd } from "react-icons/io";
 import { useDropzone } from "react-dropzone";
 import { logger } from "@lib/logger";
 import ImageThumbnailComponent from "@components/cards/image-thumbnail";
 import { useForm } from "react-hook-form";
 import ky from "ky";
+import { useSession } from "next-auth/react";
+import { useShallowRouteChange } from "@hooks/use-shallow-route-change";
+import { toast } from "@lib/toast";
+import { useRouter } from "next/router";
 
 export const ModalAddRestaurant = (props) => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  // react-hook-form
   const {
-    handleSubmit,
-    register,
-    control,
-    setValue,
-    getValues,
-    reset,
-    resetField,
-    unregister,
-    formState: { errors, isSubmitting },
-  } = useForm();
+    isOpen,
+    onOpen: onOpenModal,
+    onClose: onCloseModal,
+  } = useDisclosure();
+  const { status } = useSession();
+  const router = useRouter();
+
+  const [setKeyAddRestaurant, unsetKeyAddRestaurant] =
+    useShallowRouteChange("addRestaurant");
+
+  const onOpen = () => setKeyAddRestaurant(true, onOpenModal);
+  const onClose = () => unsetKeyAddRestaurant(onCloseModal);
+
+  useEffect(() => {
+    if (props.isOpen) {
+      onOpenModal();
+    }
+  }, [props.isOpen]);
+
+  const handleOnOpenModal = () => {
+    if (status === "authenticated") {
+      onOpen();
+    } else if (status === "unauthenticated") {
+      toast.warning(
+        `[Log in](/auth/signin?callbackUrl=${router.asPath}) to add a restaurant.`,
+      );
+    }
+  };
+
+  // react-hook-form
+  const { handleSubmit, register, reset } = useForm();
 
   const fileUpload = async (file) => {
     const url = "/api/restaurants/upload";
@@ -55,11 +71,6 @@ export const ModalAddRestaurant = (props) => {
       "add-restaurant.tsx: fileUpload: formData",
       formData,
     );
-    const config = {
-      headers: {
-        "content-type": "multipart/form-data",
-      },
-    };
     // logger.debug("add-restaurant.tsx:fileUpload: ", {
     //   body: formData,
     //   ...config,
@@ -97,7 +108,7 @@ export const ModalAddRestaurant = (props) => {
   // dropzone
   const [files, setFiles] = useState<File[]>([]);
 
-  const { acceptedFiles, getRootProps, getInputProps } = useDropzone({
+  const { getRootProps, getInputProps } = useDropzone({
     accept: "image/*",
     onDrop: (acceptedFiles) => {
       logger.debug("add-dish.tsx:acceptedFiles", acceptedFiles);
@@ -130,7 +141,9 @@ export const ModalAddRestaurant = (props) => {
   });
   return (
     <>
-      {React.cloneElement(props.button, { onClick: onOpen })}
+      {React.cloneElement(props.button, {
+        onClick: handleOnOpenModal,
+      })}
       <Modal
         isOpen={isOpen}
         onClose={onClose}

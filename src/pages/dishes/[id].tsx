@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Image,
   Container,
@@ -12,6 +12,9 @@ import {
   Box,
   Link as ChakraLink,
   Avatar,
+  IconButton,
+  Textarea,
+  SkeletonText,
 } from "@chakra-ui/react";
 import { Layout } from "@components/layout";
 import {
@@ -20,61 +23,45 @@ import {
 } from "@components/layout/footer";
 import { navbarHeight } from "@components/layout/navbar";
 import { RatingComponent } from "@components/rating-component";
-import { useDish } from "@hooks/hooks-dishes";
+import {
+  useDish,
+  useDishComment,
+  useDishRating,
+  useSaveComment,
+  useSaveRating,
+} from "@hooks/hooks-dishes";
 import { logger } from "@lib/logger";
 import _ from "lodash";
 import { useRouter } from "next/router";
 import NextLink from "next/link";
-import { ExternalLinkIcon } from "@chakra-ui/icons";
+import { EditIcon, ExternalLinkIcon } from "@chakra-ui/icons";
 import { Tag } from "@components/tag";
 import { format } from "date-fns";
+import { X, FloppyDisk } from "phosphor-react";
+import { useForm } from "react-hook-form";
+import ky from "ky";
+import { useMutation } from "react-query";
+import { useHotkeys } from "react-hotkeys-hook";
+import { CommentDishComponent } from "@components/edit-components/comment-dish-component";
+import { RatingDishComponent } from "@components/edit-components/rating-dish-component";
 
 const IMAGE_LOCATION = "/images/dishes";
-const colors = [
-  "red",
-  "orange",
-  "yellow",
-  "green",
-  "teal",
-  "blue",
-  "cyan",
-  "purple",
-  "pink",
-];
-const mock = {
-  id: 4,
-  name: "Tortilla de patatas",
-  rating: 3.2,
-  votes: 10000,
-  tags: ["vegan", "vegetarian", "gluten-free"],
-  image: "tortilla-patatas.jpg",
-  opinions: [
-    {
-      user: "comitre",
-      comment:
-        "Proident anim esse duis. Esse aliquip culpa exercitation veniam consectetur velit laboris. Do ut ex in aute magna exercitation. Excepteur labore proident adipiscing laborum commodo duis amet.",
-    },
-    {
-      user: "juanpalomo",
-      comment:
-        "Proident anim esse duis. Esse aliquip culpa exercitation veniam consectetur velit laboris. Do ut ex in aute magna exercitation. Excepteur labore proident adipiscing laborum commodo duis amet.",
-    },
-  ],
-};
 
 export default function Dish(props) {
   const isDesktop = useBreakpoint("sm");
   const router = useRouter();
-  const { id } = router.query;
-  const { data: dish, isLoading, error } = useDish(id);
+  const { id: dishId } = router.query;
+
+  const { data: dish, isLoading, error } = useDish(dishId);
 
   const navbarAndFooterHeight =
     navbarHeight + (isDesktop ? footerHeight : footerHeightBase);
 
-  const ratingCount = dish?.ratings.length;
+  const ratingCount = dish?.ratings?.length;
   const totalRating = dish?.ratings.reduce((e, r) => e + r.value, 0);
   const averageRating =
     Math.round((totalRating / ratingCount) * 100) / 100 || 0;
+
   return (
     <Layout>
       <Container
@@ -137,49 +124,8 @@ export default function Dish(props) {
                   </Stack>
                 </Stack>
               </Stack>
-              <Stack id="your-rating">
-                <Heading fontWeight="light" size="lg">
-                  Your rating
-                </Heading>
-                <RatingComponent color="orange.300" isEditable />
-              </Stack>
-              <Stack id="your-comments">
-                <Heading fontWeight="light" size="lg">
-                  Your comments
-                </Heading>
-                <Box position="relative">
-                  <Text
-                    maxH="170"
-                    pb={10}
-                    overflowY="scroll"
-                    _before={{
-                      content: `""`,
-                      position: "absolute",
-                      w: "100%",
-                      h: "100%",
-                      backgroundImage:
-                        "linear-gradient(0deg, rgba(255,255,255,1) 0%, rgba(0,97,255,0) 19%);",
-                    }}
-                  >
-                    Ut magna anim aute ipsum. Labore velit tempor nisi
-                    dolor, lorem pariatur nulla excepteur. Sint do
-                    adipiscing commodo enim, officia sed deserunt
-                    cupidatat veniam et adipiscing laboris. Cupidatat
-                    amet laboris occaecat dolore. Mollit elit occaecat
-                    cupidatat deserunt. Laboris dolore reprehenderit
-                    aliquip commodo, velit nisi non ex mollit aute.
-                    Aute labore quis dolor. Esse fugiat reprehenderit
-                    officia ut ex lorem. Consequat enim id sint dolor
-                    quis ad. Sit incididunt veniam dolore aute anim
-                    aute. Dolore ut exercitation commodo eiusmod minim
-                    occaecat excepteur. Magna velit eu laborum culpa
-                    do, sed incididunt reprehenderit nostrud id est.
-                    Fugiat nulla pariatur in. Cillum laboris ex
-                    pariatur occaecat ea sunt culpa, cillum culpa ex
-                    minim laborum ipsum sed elit.
-                  </Text>
-                </Box>
-              </Stack>
+              <RatingDishComponent dishId={dishId} />
+              <CommentDishComponent dishId={dishId} />
             </Stack>
             <Stack>
               <Heading>Comments</Heading>

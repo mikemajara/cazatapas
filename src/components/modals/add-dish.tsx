@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Modal,
   ModalOverlay,
@@ -37,9 +37,43 @@ import { useForm } from "react-hook-form";
 import ky from "ky";
 import _ from "lodash";
 import { SelectAsyncTags } from "@components/select/async-select-tags";
+import { useRouter } from "next/router";
+import { useShallowRouteChange } from "@hooks/use-shallow-route-change";
+import { useSession } from "next-auth/react";
+import { toast } from "@lib/toast";
+import { MarkdownComponent } from "@components/markdown-component";
 
 export const ModalAddDish = (props) => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen,
+    onOpen: onOpenModal,
+    onClose: onCloseModal,
+  } = useDisclosure();
+  const { status } = useSession();
+  const router = useRouter();
+
+  const [setKeyAddDish, unsetKeyAddDish] =
+    useShallowRouteChange("addDish");
+
+  const onOpen = () => setKeyAddDish(true, onOpenModal);
+  const onClose = () => unsetKeyAddDish(onCloseModal);
+
+  useEffect(() => {
+    if (props.isOpen) {
+      onOpenModal();
+    }
+  }, [props.isOpen]);
+
+  const handleOnOpenModal = () => {
+    if (status === "authenticated") {
+      onOpen();
+    } else {
+      toast.warning(
+        `[Log in](/auth/signin?callbackUrl=${router.asPath}) to add a dish.`,
+      );
+    }
+  };
+
   // react-hook-form
   const {
     handleSubmit,
@@ -147,7 +181,9 @@ export const ModalAddDish = (props) => {
 
   return (
     <>
-      {React.cloneElement(props.button, { onClick: onOpen })}
+      {React.cloneElement(props.button, {
+        onClick: handleOnOpenModal,
+      })}
       <Modal
         isOpen={isOpen}
         onClose={onClose}

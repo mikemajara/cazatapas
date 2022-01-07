@@ -45,7 +45,7 @@ import { IoIosLogIn, IoIosLogOut } from "react-icons/io";
 import { IoBookmarkOutline } from "react-icons/io5";
 import { useRouter } from "next/dist/client/router";
 import { getSession, useSession } from "next-auth/react";
-import AccountComponent from "../auth/account-component";
+import { AccountComponent } from "../auth/account-component";
 
 export const navbarHeight = 60;
 
