@@ -71,10 +71,6 @@ export const ModalAddRestaurant = (props) => {
       "add-restaurant.tsx: fileUpload: formData",
       formData,
     );
-    // logger.debug("add-restaurant.tsx:fileUpload: ", {
-    //   body: formData,
-    //   ...config,
-    // });
     return await ky.post(url, { body: formData }).json();
   };
 
