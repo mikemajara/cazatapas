@@ -30,7 +30,7 @@ import { useSession } from "next-auth/react";
 import { useShallowRouteChange } from "@hooks/use-shallow-route-change";
 import { toast } from "@lib/toast";
 import { useRouter } from "next/router";
-import { indexOf } from "lodash";
+import _, { indexOf } from "lodash";
 
 export const ModalAddRestaurant = (props) => {
   const {
@@ -67,18 +67,22 @@ export const ModalAddRestaurant = (props) => {
   const { handleSubmit, register, reset } = useForm();
 
   const flagUploadedImages = (files) => {
-    setUploadedFiles([
+    setUploadedFiles((uploadedFiles) => [
       ...uploadedFiles,
       ...files.map((e) => e.originalname),
     ]);
   };
 
-  const filesUpload = async (files) => {
+  const filesUpload = async (files: File | File[]) => {
     const url = "/api/restaurants/upload";
     const formData = new FormData();
-    files.forEach((file) => {
-      formData.append("files", file, file.name);
-    });
+    if (_.isArray(files)) {
+      files.forEach((file) => {
+        formData.append("files", file, file.name);
+      });
+    } else {
+      formData.append("files", files, files.name);
+    }
     logger.debug(
       "add-restaurant.tsx: fileUpload: formData.files",
       formData.getAll("files"),
@@ -130,15 +134,9 @@ export const ModalAddRestaurant = (props) => {
         ),
       ];
       setFiles(newFiles);
-      // newFiles.forEach((file) => fileUpload(file));
-      // for (const file of newFiles) {
-      await filesUpload(newFiles);
-      // }
-      //   logger.debug(
-      //     "add-restaurant.tsx:onSubmit:uploadedFiles",
-      //     uploadedFiles,
-      //   );
-      // }
+      for (const file of newFiles) {
+        filesUpload(file);
+      }
     },
   });
 
