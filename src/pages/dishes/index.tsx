@@ -19,16 +19,18 @@ import { Layout } from "@components/layout";
 import { ModalAddDish } from "@components/modals/add-dish";
 import { logger } from "@lib/logger";
 import { MagnifyingGlass } from "phosphor-react";
-import React from "react";
+import React, { useState } from "react";
 import { useAllDishes } from "@hooks/hooks-dishes";
 import { DishInclude } from "prisma/model";
 import { Router, useRouter } from "next/router";
 
 export default function Dishes() {
+  const [search, setSearch] = useState("");
   const isMobile = useBreakpointValue({ base: true, sm: false });
   const IconComponent = isMobile ? IconButton : Button;
   const router = useRouter();
-  const { data: dishes, isLoading, error } = useAllDishes();
+  const { data: dishes, isLoading, error } = useAllDishes({ search });
+
   return (
     <Layout>
       <Container p={10} maxW="container.xl">
@@ -40,8 +42,13 @@ export default function Dishes() {
           >
             <Heading size="xl">Dishes.</Heading>
             <InputGroup size="md" maxW="sm">
-              <Input pr="4.5rem" placeholder="Search dish" />
-              <InputRightElement width="4.5rem">
+              <Input
+                pr="4.5rem"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search dish"
+              />
+              <InputRightElement width="4.5rem" zIndex={0}>
                 <MagnifyingGlass />
               </InputRightElement>
             </InputGroup>

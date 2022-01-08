@@ -80,7 +80,6 @@ async function handleGET(
               {
                 name: {
                   contains: search as string,
-                  mode: "insensitive",
                 },
               },
             ],

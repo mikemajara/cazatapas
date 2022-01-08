@@ -63,7 +63,7 @@ export const ModalAddRestaurant = (props) => {
   // react-hook-form
   const { handleSubmit, register, reset } = useForm();
 
-  const fileUpload = async (file) => {
+  const fileUpload = async (file): Promise<{ files: File[] }> => {
     const url = "/api/restaurants/upload";
     const formData = new FormData();
     formData.append("file", file);
@@ -71,30 +71,28 @@ export const ModalAddRestaurant = (props) => {
       "add-restaurant.tsx: fileUpload: formData",
       formData,
     );
-    // logger.debug("add-restaurant.tsx:fileUpload: ", {
-    //   body: formData,
-    //   ...config,
-    // });
     return await ky.post(url, { body: formData }).json();
   };
 
   async function onSubmit(values) {
     logger.debug("onSubmit:values", values);
-    let linkedImages = [];
+    let linkedImages = files.map((e) => ({
+      fileName: e.newFileName,
+    }));
     try {
-      for (const file of files) {
-        const { files: uploadedFiles } = await fileUpload(file);
-        logger.debug(
-          "add-restaurant.tsx:onSubmit:uploadedFiles",
-          uploadedFiles,
-        );
-        linkedImages.push(uploadedFiles.file.newFilename);
-      }
+      // for (const file of files) {
+      //   const { files: uploadedFiles } = await fileUpload(file);
+      //   logger.debug(
+      //     "add-restaurant.tsx:onSubmit:uploadedFiles",
+      //     uploadedFiles,
+      //   );
+      //   linkedImages.push(uploadedFiles.file.newFilename);
+      // }
       await ky.post(`/api/restaurants`, {
         json: {
           ...values,
           images: {
-            create: linkedImages.map((e) => ({ fileName: e })),
+            create: linkedImages,
           },
         },
       });
@@ -110,16 +108,25 @@ export const ModalAddRestaurant = (props) => {
 
   const { getRootProps, getInputProps } = useDropzone({
     accept: "image/*",
-    onDrop: (acceptedFiles) => {
+    onDrop: async (acceptedFiles) => {
       logger.debug("add-dish.tsx:acceptedFiles", acceptedFiles);
       const newFiles = [
         ...files,
         ...acceptedFiles.map((file) =>
-          Object.assign(file, { preview: URL.createObjectURL(file) }),
+          Object.assign(file, {
+            preview: URL.createObjectURL(file),
+            isNew: true,
+          }),
         ),
       ];
       setFiles(newFiles);
-      // setIsModified(isModified || newFiles.length > 0);
+      for (const file of newFiles) {
+        const { files: uploadedFiles } = await fileUpload(file);
+        logger.debug(
+          "add-restaurant.tsx:onSubmit:uploadedFiles",
+          uploadedFiles,
+        );
+      }
     },
   });
 
@@ -131,7 +138,7 @@ export const ModalAddRestaurant = (props) => {
   const thumbs = files.map((file) => {
     return (
       <ImageThumbnailComponent
-        isNew
+        isNew={file.isNew}
         key={file.name}
         fileName={file.name}
         fileSrc={file.preview}

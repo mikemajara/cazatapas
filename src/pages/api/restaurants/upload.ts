@@ -7,8 +7,12 @@ import {
   getEmailAndApiKeyFromHeader,
   isUserAuthorizedWithApiKey,
 } from "@lib/auth/api-key";
-
+import S3 from "aws-sdk/clients/s3";
+import { PassThrough } from "stream";
 import formidable from "formidable";
+import path from "path";
+
+const DIRECTORY = "/restaurants";
 
 export const config = {
   api: {
@@ -40,22 +44,39 @@ export default async function handle(
   }
 }
 
+const s3Client = new S3({
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_KEY,
+  },
+});
+
+const uploadStream = (file) => {
+  const pass = new PassThrough();
+  s3Client
+    .upload(
+      {
+        Bucket: path.join(process.env.BUCKET_NAME, DIRECTORY),
+        Key: file.newFilename,
+        Body: pass,
+      },
+      (err, data) => {
+        if (err) logger.error(err);
+      },
+    )
+    .promise();
+  return pass;
+};
+
 // POST /api/restaurants/:id?
 async function handlePOST(req, res) {
-  const form = new formidable.IncomingForm({
-    uploadDir: "public/images/restaurants",
+  const form = formidable({
+    uploadDir: DIRECTORY,
     keepExtensions: true,
+    fileWriteStreamHandler: uploadStream,
   });
-  return form.parse(req, (err, fields, files) => {
-    // logger.debug(
-    //   "upload.ts:handlePOST:err, fields, files",
-    //   err,
-    //   fields,
-    //   files,
-    // );
-    if (err) {
-      return err;
-    }
+  await form.parse(req, (err, fields, files: File[]) => {
+    if (err) return err;
     res.status(200).json({ files });
   });
 }

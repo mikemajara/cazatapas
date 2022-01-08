@@ -10,12 +10,24 @@ import ky from "ky";
 import { DishInclude, RestaurantInclude } from "prisma/model";
 import { Comment } from "@prisma/client";
 import { logger } from "@lib/logger";
+import _ from "lodash";
 
-export const useAllDishes = () => {
+interface Params {
+  search?: string;
+  orderBy?: string;
+  sortOrder?: string;
+  pageSize?: string;
+  pageNumber?: string;
+}
+
+export const useAllDishes = (params: Params = {}) => {
+  const paramString = !_.isEmpty(params)
+    ? `?${_.map(params, (v, k) => `${k}=${v}`).join("&")}`
+    : "";
   const [result, setResult] = useState<DishInclude[]>([]);
   const { data, isLoading, error } = useQuery<DishInclude[]>(
-    "/api/dishes",
-    () => ky.get("/api/dishes").json(),
+    `/api/dishes${paramString}`,
+    () => ky.get(`/api/dishes${paramString}`).json(),
     { onSuccess: (data) => setResult(data) },
   );
   return { data: result, isLoading, error };
