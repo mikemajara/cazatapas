@@ -7,12 +7,10 @@ import {
   getEmailAndApiKeyFromHeader,
   isUserAuthorizedWithApiKey,
 } from "@lib/auth/api-key";
-import S3 from "aws-sdk/clients/s3";
-import { PassThrough } from "stream";
-import formidable from "formidable";
+import nextConnect from "next-connect";
+import multer from "multer";
+import { pseudoRandomBytes } from "crypto";
 import path from "path";
-
-const DIRECTORY = "/restaurants";
 
 export const config = {
   api: {
@@ -20,62 +18,40 @@ export const config = {
   },
 };
 
-export default async function handle(
-  req: NextApiRequest,
-  res: NextApiResponse,
-) {
-  // authorization
-  // const session = await getSession({ req });
-  // if (!session) {
-  //   const isAuthorized = await isUserAuthorizedWithApiKey(req);
-  //   if (!isAuthorized) {
-  //     res.status(401).end();
-  //   }
-  // }
-  if (req.method === "POST") {
-    await handlePOST(req, res);
-    // logger.debug("upload.ts:handle:result", result);
-  } else {
+const upload = multer({
+  storage: multer.diskStorage({
+    destination: "public/images/restaurants",
+    filename: function (req, file, cb) {
+      pseudoRandomBytes(16, function (err, raw) {
+        cb(
+          null,
+          raw.toString("hex") +
+            Date.now() +
+            "." +
+            path.extname(file.originalname),
+        );
+      });
+    },
+  }),
+});
+
+const apiRoute = nextConnect<NextApiRequest, NextApiResponse>({
+  onError(error, req, res) {
+    res
+      .status(501)
+      .json({ error: `Sorry something Happened! ${error.message}` });
+  },
+  onNoMatch(req, res) {
     res
       .status(405)
-      .end(
-        `The HTTP ${req.method} method is not supported at this route.`,
-      );
-  }
-}
-
-const s3Client = new S3({
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_KEY,
+      .json({ error: `Method '${req.method}' Not Allowed` });
   },
 });
 
-const uploadStream = (file) => {
-  const pass = new PassThrough();
-  s3Client.upload(
-    {
-      Bucket: path.join(process.env.BUCKET_NAME, DIRECTORY),
-      Key: file.newFilename,
-      Body: pass,
-    },
-    (err, data) => {
-      if (err) logger.error(err);
-    },
-  );
-  return pass;
-};
+apiRoute.use(upload.single("file"));
 
-// POST /api/restaurants/:id?
-async function handlePOST(req, res) {
-  const form = formidable({
-    uploadDir: DIRECTORY,
-    keepExtensions: true,
-    fileWriteStreamHandler: uploadStream,
-  });
-  form.parse(req, (err, fields, files: File[]) => {
-    if (err) return err;
-    res.status(200).json({ files });
-  });
-  return;
-}
+apiRoute.post((req, res) => {
+  res.status(200).json({ file: req.file });
+});
+
+export default apiRoute;

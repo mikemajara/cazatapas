@@ -63,7 +63,7 @@ export const ModalAddRestaurant = (props) => {
   // react-hook-form
   const { handleSubmit, register, reset } = useForm();
 
-  const fileUpload = async (file): Promise<{ files: File[] }> => {
+  const fileUpload = async (file: File): Promise<{ file: File }> => {
     const url = "/api/restaurants/upload";
     const formData = new FormData();
     formData.append("file", file);
@@ -121,10 +121,10 @@ export const ModalAddRestaurant = (props) => {
       ];
       setFiles(newFiles);
       for (const file of newFiles) {
-        const { files: uploadedFiles } = await fileUpload(file);
+        const { file: uploadedFile } = await fileUpload(file);
         logger.debug(
-          "add-restaurant.tsx:onSubmit:uploadedFiles",
-          uploadedFiles,
+          "add-restaurant.tsx:onSubmit:uploadedFile",
+          uploadedFile,
         );
       }
     },
