@@ -11,7 +11,7 @@ import React, { useState } from "react";
 import { GrFormClose } from "react-icons/gr";
 
 interface Props {
-  isNew?: boolean;
+  isLoading?: boolean;
   key: string;
   fileSrc: string;
   fileName: string;
@@ -23,7 +23,7 @@ export default function ImageThumbnailComponent(props: Props) {
     key,
     fileSrc,
     fileName,
-    isNew = false,
+    isLoading = false,
     handleImageDelete,
   } = props;
 
@@ -38,7 +38,7 @@ export default function ImageThumbnailComponent(props: Props) {
       onMouseLeave={() => setIsHovered(false)}
     >
       <Image
-        opacity={isNew && 0.5}
+        opacity={isLoading && 0.4}
         mr={5}
         src={fileSrc}
         fallbackSrc="/images/no-image.jpg"
@@ -54,11 +54,11 @@ export default function ImageThumbnailComponent(props: Props) {
         left="-5px"
         top="-5px"
       >
-        {isNew ? (
+        {isLoading ? (
           <Spinner
             size="sm"
             borderRadius="xl"
-            visibility={isNew ? "visible" : "hidden"}
+            visibility={isLoading ? "visible" : "hidden"}
           />
         ) : (
           <Box

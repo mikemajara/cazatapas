@@ -59,12 +59,12 @@ const apiRoute = nextConnect<NextApiRequest, NextApiResponse>({
   },
 });
 
-apiRoute.use(upload.array("files", 10));
+apiRoute.use(upload.single("file"));
 
 apiRoute.post((req, res) => {
   // logger.debug("upload.ts: req.files", req.files);
   // logger.debug("upload.ts: req.body", req.body);
-  res.status(200).json(req.files);
+  res.status(200).json(req.file);
 });
 
 export default apiRoute;

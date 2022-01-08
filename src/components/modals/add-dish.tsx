@@ -111,7 +111,7 @@ export const ModalAddDish = (props) => {
   const thumbs = files.map((file) => {
     return (
       <ImageThumbnailComponent
-        isNew
+        isLoading
         key={file.name}
         fileName={file.name}
         fileSrc={file.preview}

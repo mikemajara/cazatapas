@@ -66,27 +66,29 @@ export const ModalAddRestaurant = (props) => {
   // react-hook-form
   const { handleSubmit, register, reset } = useForm();
 
-  const flagUploadedImages = (files) => {
-    setUploadedFiles((uploadedFiles) => [
-      ...uploadedFiles,
-      ...files.map((e) => e.originalname),
-    ]);
+  const flagUploadedImages = (uploadedFile) => {
+    setFiles((files) => {
+      for (let i = 0; i < files.length; i++) {
+        if (files[i].name === uploadedFile.originalname) {
+          files[i] = {
+            ...files[i],
+            ...uploadedFile,
+            isLoading: false,
+          };
+        }
+      }
+      return [...files];
+    });
+    // setUploadedFiles((uploadedFiles) => [
+    //   ...uploadedFiles,
+    //   ...uploadedFile.map((e) => e.originalname),
+    // ]);
   };
 
-  const filesUpload = async (files: File | File[]) => {
+  const filesUpload = async (file: File) => {
     const url = "/api/restaurants/upload";
     const formData = new FormData();
-    if (_.isArray(files)) {
-      files.forEach((file) => {
-        formData.append("files", file, file.name);
-      });
-    } else {
-      formData.append("files", files, files.name);
-    }
-    logger.debug(
-      "add-restaurant.tsx: fileUpload: formData.files",
-      formData.getAll("files"),
-    );
+    formData.append("file", file);
     const response = await ky.post(url, { body: formData }).json();
     logger.debug(
       "add-restaurant.tsx: fileUpload: response",
@@ -97,7 +99,7 @@ export const ModalAddRestaurant = (props) => {
 
   async function onSubmit(values) {
     logger.debug("onSubmit:values", values);
-    let linkedImages = uploadedFiles.map((e) => ({
+    let linkedImages = files.map((e) => ({
       fileName: e.key,
     }));
     try {
@@ -118,7 +120,7 @@ export const ModalAddRestaurant = (props) => {
 
   // dropzone
   const [files, setFiles] = useState<File[]>([]);
-  const [uploadedFiles, setUploadedFiles] = useState([]);
+  // const [uploadedFiles, setUploadedFiles] = useState([]);
 
   const { getRootProps, getInputProps } = useDropzone({
     accept: "image/*",
@@ -129,7 +131,7 @@ export const ModalAddRestaurant = (props) => {
         ...acceptedFiles.map((file) =>
           Object.assign(file, {
             preview: URL.createObjectURL(file),
-            isNew: true,
+            isLoading: true,
           }),
         ),
       ];
@@ -148,7 +150,7 @@ export const ModalAddRestaurant = (props) => {
   const thumbs = files.map((file) => {
     return (
       <ImageThumbnailComponent
-        isNew={!uploadedFiles.includes(file.name)}
+        isLoading={file.isLoading}
         key={file.name}
         fileName={file.name}
         fileSrc={file.preview}
@@ -184,7 +186,7 @@ export const ModalAddRestaurant = (props) => {
                     Search for the restaurant.
                   </FormHelperText>
                 </FormControl>
-                <Box>UploadedFiles: {uploadedFiles.length}</Box>
+                {/* <Box>UploadedFiles: {uploadedFiles.length}</Box> */}
                 <Stack>
                   <FormLabel>Images</FormLabel>
                   <SimpleGrid columns={3} justifyItems="center">
