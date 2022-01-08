@@ -26,7 +26,6 @@ import { Router, useRouter } from "next/router";
 
 export default function Dishes() {
   const [search, setSearch] = useState("");
-
   const isMobile = useBreakpointValue({ base: true, sm: false });
   const IconComponent = isMobile ? IconButton : Button;
   const router = useRouter();
@@ -49,7 +48,7 @@ export default function Dishes() {
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search dish"
               />
-              <InputRightElement width="4.5rem">
+              <InputRightElement width="4.5rem" zIndex={0}>
                 <MagnifyingGlass />
               </InputRightElement>
             </InputGroup>
