@@ -9,8 +9,10 @@ import {
 } from "@lib/auth/api-key";
 import S3 from "aws-sdk/clients/s3";
 import { PassThrough } from "stream";
-
 import formidable from "formidable";
+import path from "path";
+
+const DIRECTORY = "/restaurants";
 
 export const config = {
   api: {
@@ -51,31 +53,30 @@ const s3Client = new S3({
 
 const uploadStream = (file) => {
   const pass = new PassThrough();
-  s3Client.upload(
-    {
-      Bucket: process.env.BUCKET_NAME + "/restaurants",
-      Key: file.newFilename,
-      Body: pass,
-    },
-    (err, data) => {
-      console.log(err, data);
-    },
-  );
-
+  s3Client
+    .upload(
+      {
+        Bucket: path.join(process.env.BUCKET_NAME, DIRECTORY),
+        Key: file.newFilename,
+        Body: pass,
+      },
+      (err, data) => {
+        if (err) logger.error(err);
+      },
+    )
+    .promise();
   return pass;
 };
 
 // POST /api/restaurants/:id?
 async function handlePOST(req, res) {
   const form = formidable({
-    uploadDir: "/restaurants",
+    uploadDir: DIRECTORY,
     keepExtensions: true,
     fileWriteStreamHandler: uploadStream,
   });
-  form.parse(req, (err, fields, files) => {
-    if (err) {
-      return err;
-    }
+  await form.parse(req, (err, fields, files: File[]) => {
+    if (err) return err;
     res.status(200).json({ files });
   });
 }
