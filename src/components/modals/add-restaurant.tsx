@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Modal,
   ModalOverlay,
@@ -17,6 +17,8 @@ import {
   Flex,
   Icon,
   SimpleGrid,
+  Text,
+  Box,
 } from "@chakra-ui/react";
 import { IoIosAdd } from "react-icons/io";
 import { useDropzone } from "react-dropzone";
@@ -63,7 +65,11 @@ export const ModalAddRestaurant = (props) => {
   // react-hook-form
   const { handleSubmit, register, reset } = useForm();
 
-  const fileUpload = async (file: File): Promise<{ file: File }> => {
+  const flagUploadedImage = (file) => {
+    uploadedFiles.current = [...uploadedFiles.current, file];
+  };
+
+  const fileUpload = async (file): Promise<{ files: File[] }> => {
     const url = "/api/restaurants/upload";
     const formData = new FormData();
     formData.append("file", file);
@@ -71,13 +77,24 @@ export const ModalAddRestaurant = (props) => {
       "add-restaurant.tsx: fileUpload: formData",
       formData,
     );
-    return await ky.post(url, { body: formData }).json();
+    const fileResponse = await ky
+      .post(url, { body: formData })
+      .json();
+    logger.debug(
+      "add-restaurant.tsx: fileUpload: fileResponse",
+      fileResponse,
+    );
+    flagUploadedImage(fileResponse);
+    logger.debug(
+      "add-restaurant.tsx: fileUpload: uploadedFiles",
+      uploadedFiles,
+    );
   };
 
   async function onSubmit(values) {
     logger.debug("onSubmit:values", values);
-    let linkedImages = files.map((e) => ({
-      fileName: e.newFileName,
+    let linkedImages = uploadedFiles.current.map((e) => ({
+      fileName: e.key,
     }));
     try {
       // for (const file of files) {
@@ -105,6 +122,8 @@ export const ModalAddRestaurant = (props) => {
 
   // dropzone
   const [files, setFiles] = useState<File[]>([]);
+  // const [uploadedFiles, setUploadedFiles] = useState([]);
+  const uploadedFiles = useRef([]);
 
   const { getRootProps, getInputProps } = useDropzone({
     accept: "image/*",
@@ -120,13 +139,15 @@ export const ModalAddRestaurant = (props) => {
         ),
       ];
       setFiles(newFiles);
+      // newFiles.forEach((file) => fileUpload(file));
       for (const file of newFiles) {
-        const { file: uploadedFile } = await fileUpload(file);
-        logger.debug(
-          "add-restaurant.tsx:onSubmit:uploadedFile",
-          uploadedFile,
-        );
+        await fileUpload(file);
       }
+      //   logger.debug(
+      //     "add-restaurant.tsx:onSubmit:uploadedFiles",
+      //     uploadedFiles,
+      //   );
+      // }
     },
   });
 
@@ -138,7 +159,11 @@ export const ModalAddRestaurant = (props) => {
   const thumbs = files.map((file) => {
     return (
       <ImageThumbnailComponent
-        isNew={file.isNew}
+        isNew={
+          !uploadedFiles.current
+            .map((e) => e.originalname)
+            .includes(file.name)
+        }
         key={file.name}
         fileName={file.name}
         fileSrc={file.preview}
@@ -146,6 +171,7 @@ export const ModalAddRestaurant = (props) => {
       />
     );
   });
+
   return (
     <>
       {React.cloneElement(props.button, {
@@ -173,6 +199,9 @@ export const ModalAddRestaurant = (props) => {
                     Search for the restaurant.
                   </FormHelperText>
                 </FormControl>
+                <Box>
+                  UploadedFiles: {uploadedFiles.current.length}
+                </Box>
                 <Stack>
                   <FormLabel>Images</FormLabel>
                   <SimpleGrid columns={3} justifyItems="center">

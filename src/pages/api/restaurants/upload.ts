@@ -11,6 +11,8 @@ import nextConnect from "next-connect";
 import multer from "multer";
 import { pseudoRandomBytes } from "crypto";
 import path from "path";
+import multerS3 from "multer-s3";
+import S3 from "aws-sdk/clients/s3";
 
 export const config = {
   api: {
@@ -18,20 +20,29 @@ export const config = {
   },
 };
 
+const s3Client = new S3({
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_KEY,
+  },
+});
+
+const getFileName = (req, file, cb) =>
+  pseudoRandomBytes(16, function (err, raw) {
+    cb(
+      null,
+      raw.toString("hex") +
+        Date.now() +
+        path.extname(file.originalname),
+    );
+  });
+
 const upload = multer({
-  storage: multer.diskStorage({
-    destination: "public/images/restaurants",
-    filename: function (req, file, cb) {
-      pseudoRandomBytes(16, function (err, raw) {
-        cb(
-          null,
-          raw.toString("hex") +
-            Date.now() +
-            "." +
-            path.extname(file.originalname),
-        );
-      });
-    },
+  storage: multerS3({
+    s3: s3Client,
+    bucket: "cazatapa/restaurants",
+    filename: getFileName,
+    key: getFileName,
   }),
 });
 
@@ -51,7 +62,7 @@ const apiRoute = nextConnect<NextApiRequest, NextApiResponse>({
 apiRoute.use(upload.single("file"));
 
 apiRoute.post((req, res) => {
-  res.status(200).json({ file: req.file });
+  res.status(200).json(req.file);
 });
 
 export default apiRoute;

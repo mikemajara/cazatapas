@@ -1,4 +1,12 @@
-import { Badge, Flex, Icon, Image } from "@chakra-ui/react";
+import {
+  Badge,
+  Box,
+  Flex,
+  Icon,
+  Image,
+  Spinner,
+} from "@chakra-ui/react";
+import { CheckCircle } from "phosphor-react";
 import React, { useState } from "react";
 import { GrFormClose } from "react-icons/gr";
 
@@ -29,6 +37,15 @@ export default function ImageThumbnailComponent(props: Props) {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
+      <Image
+        opacity={isNew && 0.5}
+        mr={5}
+        src={fileSrc}
+        fallbackSrc="/images/no-image.jpg"
+        boxSize="100px"
+        borderRadius="md"
+        objectFit="cover"
+      />
       <Flex
         w="90%"
         position="absolute"
@@ -37,13 +54,15 @@ export default function ImageThumbnailComponent(props: Props) {
         left="-5px"
         top="-5px"
       >
-        <Badge
-          colorScheme="green"
-          borderRadius="xl"
-          visibility={isNew ? "visible" : "hidden"}
-        >
-          new
-        </Badge>
+        {isNew ? (
+          <Spinner
+            size="sm"
+            borderRadius="xl"
+            visibility={isNew ? "visible" : "hidden"}
+          />
+        ) : (
+          <Icon as={CheckCircle} color="green.500" />
+        )}
         {isHovered && (
           <Icon
             as={GrFormClose}
@@ -54,14 +73,6 @@ export default function ImageThumbnailComponent(props: Props) {
           />
         )}
       </Flex>
-      <Image
-        mr={5}
-        src={fileSrc}
-        fallbackSrc="/images/no-image.jpg"
-        boxSize="100px"
-        borderRadius="md"
-        objectFit="cover"
-      />
     </Flex>
   );
 }
