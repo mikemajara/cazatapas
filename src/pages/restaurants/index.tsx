@@ -23,7 +23,11 @@ import { MagnifyingGlass } from "phosphor-react";
 export default function Dishes() {
   const [search, setSearch] = useState("");
   const isMobile = useBreakpointValue({ base: true, sm: false });
-  const IconComponent = isMobile ? IconButton : Button;
+  const buttonExpanded = useBreakpointValue({
+    base: true,
+    md: false,
+  });
+  const IconComponent = buttonExpanded ? IconButton : Button;
   const {
     data: restaurants,
     isLoading,
@@ -64,17 +68,20 @@ export default function Dishes() {
           <ModalAddRestaurant
             button={
               <IconComponent
+                bg="white"
                 aria-label="add"
                 position="fixed"
-                bottom={["44"]}
+                bottom={{ base: 10, md: 40 }}
                 right={["5", "10"]}
                 variant="outline"
                 border="1px solid"
                 borderColor="black"
-                icon={isMobile && <AddIcon fontSize="xs" />}
-                leftIcon={!isMobile && <AddIcon fontSize="xs" />}
+                icon={buttonExpanded && <AddIcon fontSize="xs" />}
+                leftIcon={
+                  !buttonExpanded && <AddIcon fontSize="xs" />
+                }
                 style={{ boxShadow: "4px 4px 0px #000000" }}
-                children={!isMobile && "Add restaurant"}
+                children={!buttonExpanded && "Add restaurant"}
               />
             }
           />
