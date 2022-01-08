@@ -6,7 +6,7 @@ import {
   Image,
   Spinner,
 } from "@chakra-ui/react";
-import { CheckCircle } from "phosphor-react";
+import { Check, CheckCircle } from "phosphor-react";
 import React, { useState } from "react";
 import { GrFormClose } from "react-icons/gr";
 
@@ -47,7 +47,7 @@ export default function ImageThumbnailComponent(props: Props) {
         objectFit="cover"
       />
       <Flex
-        w="90%"
+        w="92%"
         position="absolute"
         flexDirection="row"
         justifyContent="space-between"
@@ -61,13 +61,20 @@ export default function ImageThumbnailComponent(props: Props) {
             visibility={isNew ? "visible" : "hidden"}
           />
         ) : (
-          <Icon as={CheckCircle} color="green.500" />
+          <Box
+            p={0.5}
+            border="1.5px solid #00ca0c"
+            borderRadius="2xl"
+            bg="green.100"
+          >
+            <Check size={10} color="#00ca0c" weight="bold" />
+          </Box>
         )}
         {isHovered && (
           <Icon
             as={GrFormClose}
             bg="gray.300"
-            borderRadius="xl"
+            borderRadius="2xl"
             onClick={() => handleImageDelete()}
             cursor="pointer"
           />
