@@ -7,12 +7,12 @@ import {
   getEmailAndApiKeyFromHeader,
   isUserAuthorizedWithApiKey,
 } from "@lib/auth/api-key";
-import nextConnect from "next-connect";
-import multer from "multer";
-import { pseudoRandomBytes } from "crypto";
 import path from "path";
-import multerS3 from "multer-s3";
+import nextConnect from "next-connect";
 import S3 from "aws-sdk/clients/s3";
+import multer from "multer";
+import multerS3 from "multer-s3";
+import { pseudoRandomBytes } from "crypto";
 
 export const config = {
   api: {
@@ -59,10 +59,12 @@ const apiRoute = nextConnect<NextApiRequest, NextApiResponse>({
   },
 });
 
-apiRoute.use(upload.single("file"));
+apiRoute.use(upload.array("files", 10));
 
 apiRoute.post((req, res) => {
-  res.status(200).json(req.file);
+  // logger.debug("upload.ts: req.files", req.files);
+  // logger.debug("upload.ts: req.body", req.body);
+  res.status(200).json(req.files);
 });
 
 export default apiRoute;

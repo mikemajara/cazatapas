@@ -30,6 +30,7 @@ import { useSession } from "next-auth/react";
 import { useShallowRouteChange } from "@hooks/use-shallow-route-change";
 import { toast } from "@lib/toast";
 import { useRouter } from "next/router";
+import { indexOf } from "lodash";
 
 export const ModalAddRestaurant = (props) => {
   const {
@@ -65,46 +66,37 @@ export const ModalAddRestaurant = (props) => {
   // react-hook-form
   const { handleSubmit, register, reset } = useForm();
 
-  const flagUploadedImage = (file) => {
-    uploadedFiles.current = [...uploadedFiles.current, file];
+  const flagUploadedImages = (files) => {
+    setUploadedFiles([
+      ...uploadedFiles,
+      ...files.map((e) => e.originalname),
+    ]);
   };
 
-  const fileUpload = async (file): Promise<{ files: File[] }> => {
+  const filesUpload = async (files) => {
     const url = "/api/restaurants/upload";
     const formData = new FormData();
-    formData.append("file", file);
+    files.forEach((file) => {
+      formData.append("files", file, file.name);
+    });
     logger.debug(
-      "add-restaurant.tsx: fileUpload: formData",
-      formData,
+      "add-restaurant.tsx: fileUpload: formData.files",
+      formData.getAll("files"),
     );
-    const fileResponse = await ky
-      .post(url, { body: formData })
-      .json();
+    const response = await ky.post(url, { body: formData }).json();
     logger.debug(
-      "add-restaurant.tsx: fileUpload: fileResponse",
-      fileResponse,
+      "add-restaurant.tsx: fileUpload: response",
+      response,
     );
-    flagUploadedImage(fileResponse);
-    logger.debug(
-      "add-restaurant.tsx: fileUpload: uploadedFiles",
-      uploadedFiles,
-    );
+    flagUploadedImages(response);
   };
 
   async function onSubmit(values) {
     logger.debug("onSubmit:values", values);
-    let linkedImages = uploadedFiles.current.map((e) => ({
+    let linkedImages = uploadedFiles.map((e) => ({
       fileName: e.key,
     }));
     try {
-      // for (const file of files) {
-      //   const { files: uploadedFiles } = await fileUpload(file);
-      //   logger.debug(
-      //     "add-restaurant.tsx:onSubmit:uploadedFiles",
-      //     uploadedFiles,
-      //   );
-      //   linkedImages.push(uploadedFiles.file.newFilename);
-      // }
       await ky.post(`/api/restaurants`, {
         json: {
           ...values,
@@ -122,8 +114,7 @@ export const ModalAddRestaurant = (props) => {
 
   // dropzone
   const [files, setFiles] = useState<File[]>([]);
-  // const [uploadedFiles, setUploadedFiles] = useState([]);
-  const uploadedFiles = useRef([]);
+  const [uploadedFiles, setUploadedFiles] = useState([]);
 
   const { getRootProps, getInputProps } = useDropzone({
     accept: "image/*",
@@ -140,9 +131,9 @@ export const ModalAddRestaurant = (props) => {
       ];
       setFiles(newFiles);
       // newFiles.forEach((file) => fileUpload(file));
-      for (const file of newFiles) {
-        await fileUpload(file);
-      }
+      // for (const file of newFiles) {
+      await filesUpload(newFiles);
+      // }
       //   logger.debug(
       //     "add-restaurant.tsx:onSubmit:uploadedFiles",
       //     uploadedFiles,
@@ -159,11 +150,7 @@ export const ModalAddRestaurant = (props) => {
   const thumbs = files.map((file) => {
     return (
       <ImageThumbnailComponent
-        isNew={
-          !uploadedFiles.current
-            .map((e) => e.originalname)
-            .includes(file.name)
-        }
+        isNew={!uploadedFiles.includes(file.name)}
         key={file.name}
         fileName={file.name}
         fileSrc={file.preview}
@@ -199,9 +186,7 @@ export const ModalAddRestaurant = (props) => {
                     Search for the restaurant.
                   </FormHelperText>
                 </FormControl>
-                <Box>
-                  UploadedFiles: {uploadedFiles.current.length}
-                </Box>
+                <Box>UploadedFiles: {uploadedFiles.length}</Box>
                 <Stack>
                   <FormLabel>Images</FormLabel>
                   <SimpleGrid columns={3} justifyItems="center">
