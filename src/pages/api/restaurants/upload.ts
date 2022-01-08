@@ -53,18 +53,16 @@ const s3Client = new S3({
 
 const uploadStream = (file) => {
   const pass = new PassThrough();
-  s3Client
-    .upload(
-      {
-        Bucket: path.join(process.env.BUCKET_NAME, DIRECTORY),
-        Key: file.newFilename,
-        Body: pass,
-      },
-      (err, data) => {
-        if (err) logger.error(err);
-      },
-    )
-    .promise();
+  s3Client.upload(
+    {
+      Bucket: path.join(process.env.BUCKET_NAME, DIRECTORY),
+      Key: file.newFilename,
+      Body: pass,
+    },
+    (err, data) => {
+      if (err) logger.error(err);
+    },
+  );
   return pass;
 };
 
@@ -75,8 +73,9 @@ async function handlePOST(req, res) {
     keepExtensions: true,
     fileWriteStreamHandler: uploadStream,
   });
-  await form.parse(req, (err, fields, files: File[]) => {
+  form.parse(req, (err, fields, files: File[]) => {
     if (err) return err;
     res.status(200).json({ files });
   });
+  return;
 }
