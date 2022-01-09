@@ -30,7 +30,6 @@ import { IoIosAdd } from "react-icons/io";
 import { useDropzone } from "react-dropzone";
 import { logger } from "@lib/logger";
 import ImageThumbnailComponent from "@components/cards/image-thumbnail";
-import { SelectAsyncRestaurant } from "@components/select/async-select-restaurant";
 import { AiOutlineShop } from "react-icons/ai";
 import { SelectAsyncRestaurantBasic } from "@components/select/async-select-restaurant-basic";
 import { useForm } from "react-hook-form";
