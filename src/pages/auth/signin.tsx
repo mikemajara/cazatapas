@@ -74,7 +74,7 @@ export default function AuthModal() {
           boxShadow={"lg"}
           p={8}
         >
-          <VStack>
+          <VStack spacing={5}>
             {/* <FormPasswordlessEmail /> */}
             {/* <FormProvider
               provider="twitter"
@@ -82,13 +82,14 @@ export default function AuthModal() {
               icon={<AiFillTwitterCircle />}
               label="Twitter"
             /> */}
+            <AuthCredentials isOpen />
+            <Divider />
             <FormProvider
               provider="google"
               callbackUrl={router.query.callbackUrl?.toString()}
               icon={<AiFillGoogleCircle />}
-              label="Google"
+              label="Sign in with Google"
             />
-            <AuthCredentials />
           </VStack>
         </Box>
       </Stack>

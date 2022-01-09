@@ -8,7 +8,7 @@ export const FormProvider = (props) => {
   return (
     <Button
       w="full"
-      leftIcon={icon}
+      rightIcon={icon}
       onClick={() =>
         signIn(provider, {
           callbackUrl,
