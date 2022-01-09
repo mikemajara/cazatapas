@@ -19,6 +19,10 @@ import { useRouter } from "next/router";
 import _ from "lodash";
 
 const loadOptions = async (inputValue: string) => {
+  logger.debug(
+    "asyc-select-restaurant:loadOptions:inputValue",
+    inputValue,
+  );
   let tags: Tag[] = await ky
     .get(`/api/tags?search=${inputValue}`)
     .json();
