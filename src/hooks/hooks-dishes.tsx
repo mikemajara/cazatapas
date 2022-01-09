@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Dish, Rating, Restaurant } from "@prisma/client";
+import { Rating, Comment } from "@prisma/client";
 import {
   QueryClient,
   useMutation,
@@ -8,7 +8,6 @@ import {
 } from "react-query";
 import ky from "ky";
 import { DishInclude, RestaurantInclude } from "prisma/model";
-import { Comment } from "@prisma/client";
 import { logger } from "@lib/logger";
 import _ from "lodash";
 
@@ -52,7 +51,7 @@ export const useDishComment = (dishId) => {
       onSuccess: (data) => setResult(data),
       refetchOnWindowFocus: false,
       enabled: !!dishId,
-      retry: (failureCount, error) => {
+      retry: (failureCount, error: any) => {
         if (error?.response?.status === 401 || failureCount > 3)
           return false;
         return true;
@@ -100,11 +99,13 @@ export const useSaveComment = (dishId) => {
 export const useSaveRating = (dishId) => {
   const queryClient = useQueryClient();
   return useMutation(
-    (json) => {
+    (json: any) => {
       logger.debug("hooks-dishes.tsx:useSaveRating:json", json);
-      return ky.post(`/api/dishes/rate?dishId=${dishId}`, {
-        json,
-      });
+      return ky
+        .post(`/api/dishes/rate?dishId=${dishId}`, {
+          json,
+        })
+        .json();
     },
     {
       onSuccess: () => {

@@ -88,7 +88,7 @@ export const ModalAddDish = (props) => {
 
   async function onSubmit(values) {
     logger.debug("onSubmit:values", values);
-    let linkedImages = files.map((e) => ({ fileName: e.key }));
+    let linkedImages = files.map((e: any) => ({ fileName: e.key }));
     try {
       await ky.post(`/api/dishes`, {
         json: {
