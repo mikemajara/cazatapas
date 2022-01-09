@@ -50,7 +50,7 @@ export const ModalAddDish = (props) => {
     onOpen: onOpenModal,
     onClose: onCloseModal,
   } = useDisclosure();
-  const { status } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
 
   const [setKeyAddDish, unsetKeyAddDish] =
@@ -81,6 +81,7 @@ export const ModalAddDish = (props) => {
     register,
     control,
     reset,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm();
 
@@ -97,14 +98,21 @@ export const ModalAddDish = (props) => {
             "comments",
             "dish",
             "tags",
+            "rating",
           ]),
           restaurant: {
             connect: { id: values.restaurant.id },
           },
+          ratings: {
+            create: {
+              value: values.rating,
+              user: { connect: { email: session.user?.email } },
+            },
+          },
           comments: {
             create: {
               text: values.comment,
-              user: { connect: { email: "alice@rateplate.io" } },
+              user: { connect: { email: session.user?.email } },
             },
           },
           images: { create: linkedImages },
@@ -183,7 +191,15 @@ export const ModalAddDish = (props) => {
                 <Divider py={3} />
                 <FormControl>
                   <FormLabel htmlFor="rating">Your rating</FormLabel>
-                  <RatingComponent isEditable />
+                  <input
+                    type="number"
+                    hidden
+                    {...register("rating")}
+                  />
+                  <RatingComponent
+                    isEditable
+                    onClick={(value) => setValue("rating", value)}
+                  />
 
                   <FormHelperText>
                     Give your dish some stars, or none if it does not

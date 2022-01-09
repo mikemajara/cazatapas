@@ -45,14 +45,12 @@ async function handleGET(
   res: NextApiResponse,
 ) {
   const id = req.query.dishId.toString();
-  logger.debug(`comments/index.ts:handleGET:id`, id);
   const dishId = parseInt(id);
-  logger.debug(`comments/index.ts:handleGET:dishId`, dishId);
   const user = await prisma.user.findUnique({
     where: { email },
   });
   const dish = await prisma.dish.findUnique({
-    where: { id: 1 },
+    where: { id: dishId },
     include: {
       ...defaultInclude,
       restaurant: true,

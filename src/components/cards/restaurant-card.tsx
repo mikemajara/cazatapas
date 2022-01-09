@@ -14,9 +14,7 @@ import { humanize } from "@lib/rounding";
 import _ from "lodash";
 import next from "next";
 import { RestaurantInclude } from "prisma/model";
-
-const IMAGE_LOCATION =
-  "https://cazatapa.s3.eu-central-1.amazonaws.com/restaurants";
+import { imageLocations } from "@lib/constants";
 
 export const RestaurantCard = (props: RestaurantInclude) => {
   const { id, name, dishes, images } = props;
@@ -39,7 +37,7 @@ export const RestaurantCard = (props: RestaurantInclude) => {
             as={Image}
             boxSize={220}
             fit={"cover"}
-            src={`${IMAGE_LOCATION}/${images?.[0].fileName}`}
+            src={`${imageLocations.restaurants}/${images?.[0].fileName}`}
             borderRadius={"md"}
             border=".25px solid"
             borderColor="gray.900"
