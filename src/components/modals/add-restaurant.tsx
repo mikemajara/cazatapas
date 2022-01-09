@@ -73,16 +73,13 @@ export const ModalAddRestaurant = (props) => {
           files[i] = {
             ...files[i],
             ...uploadedFile,
+            name: files[i].name,
             isLoading: false,
           };
         }
       }
       return [...files];
     });
-    // setUploadedFiles((uploadedFiles) => [
-    //   ...uploadedFiles,
-    //   ...uploadedFile.map((e) => e.originalname),
-    // ]);
   };
 
   const filesUpload = async (file: File) => {
@@ -120,7 +117,6 @@ export const ModalAddRestaurant = (props) => {
 
   // dropzone
   const [files, setFiles] = useState<File[]>([]);
-  // const [uploadedFiles, setUploadedFiles] = useState([]);
 
   const { getRootProps, getInputProps } = useDropzone({
     accept: "image/*",
@@ -143,8 +139,7 @@ export const ModalAddRestaurant = (props) => {
   });
 
   const handleLocalImageDelete = (name: string) => {
-    const newFiles = files.filter((e) => e.name !== name);
-    setFiles(newFiles);
+    setFiles((files) => [...files.filter((e) => e.name !== name)]);
   };
 
   const thumbs = files.map((file) => {
