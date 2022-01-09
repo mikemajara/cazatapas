@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Modal,
   ModalOverlay,
@@ -17,6 +17,8 @@ import {
   Flex,
   Icon,
   SimpleGrid,
+  Text,
+  Box,
 } from "@chakra-ui/react";
 import { IoIosAdd } from "react-icons/io";
 import { useDropzone } from "react-dropzone";
@@ -28,6 +30,7 @@ import { useSession } from "next-auth/react";
 import { useShallowRouteChange } from "@hooks/use-shallow-route-change";
 import { toast } from "@lib/toast";
 import { useRouter } from "next/router";
+import _, { indexOf } from "lodash";
 
 export const ModalAddRestaurant = (props) => {
   const {
@@ -63,31 +66,36 @@ export const ModalAddRestaurant = (props) => {
   // react-hook-form
   const { handleSubmit, register, reset } = useForm();
 
-  const fileUpload = async (file): Promise<{ files: File[] }> => {
+  const flagUploadedImages = (uploadedFile) => {
+    setFiles((files) => {
+      for (let i = 0; i < files.length; i++) {
+        if (files[i].name === uploadedFile.originalname) {
+          files[i] = {
+            ...files[i],
+            ...uploadedFile,
+            name: files[i].name,
+            isLoading: false,
+          };
+        }
+      }
+      return [...files];
+    });
+  };
+
+  const filesUpload = async (file: File) => {
     const url = "/api/restaurants/upload";
     const formData = new FormData();
     formData.append("file", file);
-    logger.debug(
-      "add-restaurant.tsx: fileUpload: formData",
-      formData,
-    );
-    return await ky.post(url, { body: formData }).json();
+    const response = await ky.post(url, { body: formData }).json();
+    flagUploadedImages(response);
   };
 
   async function onSubmit(values) {
     logger.debug("onSubmit:values", values);
     let linkedImages = files.map((e) => ({
-      fileName: e.newFileName,
+      fileName: e.key,
     }));
     try {
-      // for (const file of files) {
-      //   const { files: uploadedFiles } = await fileUpload(file);
-      //   logger.debug(
-      //     "add-restaurant.tsx:onSubmit:uploadedFiles",
-      //     uploadedFiles,
-      //   );
-      //   linkedImages.push(uploadedFiles.file.newFilename);
-      // }
       await ky.post(`/api/restaurants`, {
         json: {
           ...values,
@@ -115,30 +123,25 @@ export const ModalAddRestaurant = (props) => {
         ...acceptedFiles.map((file) =>
           Object.assign(file, {
             preview: URL.createObjectURL(file),
-            isNew: true,
+            isLoading: true,
           }),
         ),
       ];
       setFiles(newFiles);
       for (const file of newFiles) {
-        const { files: uploadedFiles } = await fileUpload(file);
-        logger.debug(
-          "add-restaurant.tsx:onSubmit:uploadedFiles",
-          uploadedFiles,
-        );
+        filesUpload(file);
       }
     },
   });
 
   const handleLocalImageDelete = (name: string) => {
-    const newFiles = files.filter((e) => e.name !== name);
-    setFiles(newFiles);
+    setFiles((files) => [...files.filter((e) => e.name !== name)]);
   };
 
   const thumbs = files.map((file) => {
     return (
       <ImageThumbnailComponent
-        isNew={file.isNew}
+        isLoading={file.isLoading}
         key={file.name}
         fileName={file.name}
         fileSrc={file.preview}
@@ -146,6 +149,7 @@ export const ModalAddRestaurant = (props) => {
       />
     );
   });
+
   return (
     <>
       {React.cloneElement(props.button, {
@@ -173,6 +177,7 @@ export const ModalAddRestaurant = (props) => {
                     Search for the restaurant.
                   </FormHelperText>
                 </FormControl>
+                {/* <Box>UploadedFiles: {uploadedFiles.length}</Box> */}
                 <Stack>
                   <FormLabel>Images</FormLabel>
                   <SimpleGrid columns={3} justifyItems="center">

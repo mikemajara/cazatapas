@@ -7,42 +7,18 @@ import {
   getEmailAndApiKeyFromHeader,
   isUserAuthorizedWithApiKey,
 } from "@lib/auth/api-key";
-import S3 from "aws-sdk/clients/s3";
-import { PassThrough } from "stream";
-import formidable from "formidable";
 import path from "path";
-
-const DIRECTORY = "/restaurants";
+import nextConnect from "next-connect";
+import S3 from "aws-sdk/clients/s3";
+import multer from "multer";
+import multerS3 from "multer-s3";
+import { pseudoRandomBytes } from "crypto";
 
 export const config = {
   api: {
     bodyParser: false,
   },
 };
-
-export default async function handle(
-  req: NextApiRequest,
-  res: NextApiResponse,
-) {
-  // authorization
-  // const session = await getSession({ req });
-  // if (!session) {
-  //   const isAuthorized = await isUserAuthorizedWithApiKey(req);
-  //   if (!isAuthorized) {
-  //     res.status(401).end();
-  //   }
-  // }
-  if (req.method === "POST") {
-    await handlePOST(req, res);
-    // logger.debug("upload.ts:handle:result", result);
-  } else {
-    res
-      .status(405)
-      .end(
-        `The HTTP ${req.method} method is not supported at this route.`,
-      );
-  }
-}
 
 const s3Client = new S3({
   credentials: {
@@ -51,31 +27,45 @@ const s3Client = new S3({
   },
 });
 
-const uploadStream = (file) => {
-  const pass = new PassThrough();
-  s3Client.upload(
-    {
-      Bucket: path.join(process.env.BUCKET_NAME, DIRECTORY),
-      Key: file.newFilename,
-      Body: pass,
-    },
-    (err, data) => {
-      if (err) logger.error(err);
-    },
-  );
-  return pass;
-};
+const getFileName = (req, file, cb) =>
+  pseudoRandomBytes(16, function (err, raw) {
+    cb(
+      null,
+      raw.toString("hex") +
+        Date.now() +
+        path.extname(file.originalname),
+    );
+  });
 
-// POST /api/restaurants/:id?
-async function handlePOST(req, res) {
-  const form = formidable({
-    uploadDir: DIRECTORY,
-    keepExtensions: true,
-    fileWriteStreamHandler: uploadStream,
-  });
-  form.parse(req, (err, fields, files: File[]) => {
-    if (err) return err;
-    res.status(200).json({ files });
-  });
-  return;
-}
+const upload = multer({
+  storage: multerS3({
+    s3: s3Client,
+    bucket: "cazatapa/restaurants",
+    acl: "public-read",
+    filename: getFileName,
+    key: getFileName,
+  }),
+});
+
+const apiRoute = nextConnect<NextApiRequest, NextApiResponse>({
+  onError(error, req, res) {
+    res
+      .status(501)
+      .json({ error: `Sorry something Happened! ${error.message}` });
+  },
+  onNoMatch(req, res) {
+    res
+      .status(405)
+      .json({ error: `Method '${req.method}' Not Allowed` });
+  },
+});
+
+apiRoute.use(upload.single("file"));
+
+apiRoute.post((req, res) => {
+  // logger.debug("upload.ts: req.files", req.files);
+  // logger.debug("upload.ts: req.body", req.body);
+  res.status(200).json(req.file);
+});
+
+export default apiRoute;

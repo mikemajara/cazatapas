@@ -15,7 +15,8 @@ import _ from "lodash";
 import next from "next";
 import { RestaurantInclude } from "prisma/model";
 
-const IMAGE_LOCATION = "/images/restaurants";
+const IMAGE_LOCATION =
+  "https://cazatapa.s3.eu-central-1.amazonaws.com/restaurants";
 
 export const RestaurantCard = (props: RestaurantInclude) => {
   const { id, name, dishes, images } = props;
