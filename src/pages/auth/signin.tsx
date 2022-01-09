@@ -28,7 +28,11 @@ import { each, forOwn, join } from "lodash";
 import { useRouter } from "next/router";
 
 //icons
-import { AiFillGithub, AiFillGoogleCircle } from "react-icons/ai";
+import {
+  AiFillGithub,
+  AiFillGoogleCircle,
+  AiFillTwitterCircle,
+} from "react-icons/ai";
 import { MdOutlineEmail } from "react-icons/md";
 import { BiLockAlt } from "react-icons/bi";
 import { FormPasswordlessEmail } from "@components/auth/form-passwordless";
@@ -71,12 +75,18 @@ export default function AuthModal() {
           p={8}
         >
           <VStack>
-            <FormPasswordlessEmail />
+            {/* <FormPasswordlessEmail /> */}
             <FormProvider
-              provider="github"
+              provider="twitter"
               callbackUrl={router.query.callbackUrl?.toString()}
-              icon={<AiFillGithub />}
-              label="Github"
+              icon={<AiFillTwitterCircle />}
+              label="Twitter"
+            />
+            <FormProvider
+              provider="google"
+              callbackUrl={router.query.callbackUrl?.toString()}
+              icon={<AiFillGoogleCircle />}
+              label="Google"
             />
             <AuthCredentials />
           </VStack>
