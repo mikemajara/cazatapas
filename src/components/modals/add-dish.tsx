@@ -94,7 +94,7 @@ export const ModalAddDish = (props) => {
         json: {
           ..._.omit(values, [
             "restaurant",
-            "comments",
+            "comment",
             "dish",
             "tags",
             "rating",
@@ -209,7 +209,7 @@ export const ModalAddDish = (props) => {
                   <FormLabel htmlFor="comment">
                     Your comments
                   </FormLabel>
-                  <Textarea {...register("comments")} />
+                  <Textarea {...register("comment")} />
                   <FormHelperText>Explain your rating</FormHelperText>
                 </FormControl>
               </Stack>

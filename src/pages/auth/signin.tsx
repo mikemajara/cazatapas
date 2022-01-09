@@ -76,12 +76,12 @@ export default function AuthModal() {
         >
           <VStack>
             {/* <FormPasswordlessEmail /> */}
-            <FormProvider
+            {/* <FormProvider
               provider="twitter"
               callbackUrl={router.query.callbackUrl?.toString()}
               icon={<AiFillTwitterCircle />}
               label="Twitter"
-            />
+            /> */}
             <FormProvider
               provider="google"
               callbackUrl={router.query.callbackUrl?.toString()}
