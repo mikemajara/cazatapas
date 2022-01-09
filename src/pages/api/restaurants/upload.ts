@@ -41,6 +41,7 @@ const upload = multer({
   storage: multerS3({
     s3: s3Client,
     bucket: "cazatapa/restaurants",
+    acl: "public-read",
     filename: getFileName,
     key: getFileName,
   }),
