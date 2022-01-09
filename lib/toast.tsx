@@ -24,7 +24,7 @@ const defaultConfig: UseToastOptions = {
 const toastFactory = (status: toastStatus = "info") => {
   return (
     description: string | ReactNode = "",
-    config: UseToastOptions & { markdown: boolean } = {
+    config: UseToastOptions & { markdown?: boolean } = {
       markdown: true,
     },
   ) => {

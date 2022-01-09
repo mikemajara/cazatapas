@@ -1,4 +1,8 @@
-import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
+import {
+  ChevronDownIcon,
+  ViewIcon,
+  ViewOffIcon,
+} from "@chakra-ui/icons";
 import {
   useDisclosure,
   Button,
@@ -15,17 +19,20 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react";
+import { AIcon } from "@components/chakra-animated-components";
 import { logger } from "@lib/logger";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { BiLockAlt } from "react-icons/bi";
 
-export const AuthCredentials = () => {
+export const AuthCredentials = (props) => {
   const [showPassword, setShowPassword] = useState(false);
 
-  const { isOpen, onOpen, onToggle } = useDisclosure();
+  const { isOpen, onOpen, onToggle } = useDisclosure({
+    defaultIsOpen: props.isOpen,
+  });
   const router = useRouter();
   const {
     handleSubmit,
@@ -58,12 +65,17 @@ export const AuthCredentials = () => {
 
   return (
     <>
-      <Button w="full" leftIcon={<BiLockAlt />} onClick={onToggle}>
+      <Button
+        w="full"
+        rightIcon={<BiLockAlt />}
+        onClick={onToggle}
+        variant={isOpen ? "ghost" : "solid"}
+      >
         User & password
       </Button>
       <Collapse in={isOpen} style={{ width: "100%" }}>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <Stack spacing={4} pt={10}>
+          <Stack spacing={4}>
             <FormControl
               id="email"
               isInvalid={Boolean(router.query.error)}

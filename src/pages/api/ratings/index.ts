@@ -47,7 +47,7 @@ async function handleGET(
     where: { email },
   });
   const dish = await prisma.dish.findUnique({
-    where: { id: 1 },
+    where: { id: dishId },
     include: {
       ratings: {
         where: { userId: user.id },

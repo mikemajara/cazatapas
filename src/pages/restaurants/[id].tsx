@@ -22,27 +22,7 @@ import { useAllDishes } from "@hooks/hooks-dishes";
 import { useRestaurant } from "@hooks/hooks-restaurants";
 import { AddIcon } from "@chakra-ui/icons";
 import { ModalAddDish } from "@components/modals/add-dish";
-
-const IMAGE_LOCATION = "/images/restaurants";
-const colors = [
-  "red",
-  "orange",
-  "yellow",
-  "green",
-  "teal",
-  "blue",
-  "cyan",
-  "purple",
-  "pink",
-];
-const mock = {
-  id: 4,
-  name: "Restaurante las anas",
-  votes: 100400,
-  rating: 3.2,
-  tags: ["vegan", "vegetarian", "gluten-free"],
-  images: ["los-navarros.png", "las-anas.png"],
-};
+import { imageLocations } from "@lib/constants";
 
 export default function Dish(props) {
   const router = useRouter();
@@ -59,7 +39,7 @@ export default function Dish(props) {
         w="full"
         h="350"
         fit={"cover"}
-        src={`${IMAGE_LOCATION}/${restaurant?.images?.[0]?.fileName}`}
+        src={`${imageLocations.restaurants}/${restaurant?.images?.[0]?.fileName}`}
       />
       <Container p={10} maxW="container.xl">
         <Stack spacing={10} justify={"center"}>

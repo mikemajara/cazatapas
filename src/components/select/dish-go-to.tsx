@@ -18,6 +18,7 @@ import {
 import { DishInclude, RestaurantInclude } from "prisma/model";
 import { useRouter } from "next/router";
 import _ from "lodash";
+import { imageLocations } from "@lib/constants";
 
 const loadOptions = async (inputValue: string) => {
   let dishes: DishInclude[] = await ky
@@ -48,7 +49,7 @@ const formatOptionLabel = (
         boxSize={isSelected ? 8 : 16}
         objectFit="cover"
         borderRadius="md"
-        src={`images/dishes/${data.images?.[0]?.fileName}`}
+        src={`${imageLocations.dishes}/${data.images?.[0]?.fileName}`}
       />
       <Stack>
         <Heading size="sm" fontWeight="regular">

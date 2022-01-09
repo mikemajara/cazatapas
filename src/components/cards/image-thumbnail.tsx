@@ -1,9 +1,17 @@
-import { Badge, Flex, Icon, Image } from "@chakra-ui/react";
+import {
+  Badge,
+  Box,
+  Flex,
+  Icon,
+  Image,
+  Spinner,
+} from "@chakra-ui/react";
+import { Check, CheckCircle } from "phosphor-react";
 import React, { useState } from "react";
 import { GrFormClose } from "react-icons/gr";
 
 interface Props {
-  isNew?: boolean;
+  isLoading?: boolean;
   key: string;
   fileSrc: string;
   fileName: string;
@@ -15,7 +23,7 @@ export default function ImageThumbnailComponent(props: Props) {
     key,
     fileSrc,
     fileName,
-    isNew = false,
+    isLoading = false,
     handleImageDelete,
   } = props;
 
@@ -29,39 +37,51 @@ export default function ImageThumbnailComponent(props: Props) {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <Flex
-        w="90%"
-        position="absolute"
-        flexDirection="row"
-        justifyContent="space-between"
-        left="-5px"
-        top="-5px"
-      >
-        <Badge
-          colorScheme="green"
-          borderRadius="xl"
-          visibility={isNew ? "visible" : "hidden"}
-        >
-          new
-        </Badge>
-        {isHovered && (
-          <Icon
-            as={GrFormClose}
-            bg="gray.300"
-            borderRadius="xl"
-            onClick={() => handleImageDelete()}
-            cursor="pointer"
-          />
-        )}
-      </Flex>
       <Image
-        mr={5}
+        opacity={isLoading && 0.4}
         src={fileSrc}
         fallbackSrc="/images/no-image.jpg"
         boxSize="100px"
         borderRadius="md"
         objectFit="cover"
       />
+      <Flex
+        w="112%"
+        position="absolute"
+        flexDirection="row"
+        justifyContent="space-between"
+        left="-5px"
+        top="-5px"
+      >
+        {isLoading ? (
+          <Spinner
+            size="sm"
+            borderRadius="xl"
+            visibility={isLoading ? "visible" : "hidden"}
+          />
+        ) : (
+          <Box
+            p={0.5}
+            border="1.5px solid #00ca0c"
+            borderRadius="2xl"
+            bg="green.100"
+          >
+            <Check size={10} color="#00ca0c" weight="bold" />
+          </Box>
+        )}
+        {isHovered && (
+          <Icon
+            as={GrFormClose}
+            bg="gray.300"
+            fontSize="lg"
+            borderRadius="2xl"
+            border="1px solid"
+            borderColor="gray.600"
+            onClick={() => handleImageDelete()}
+            cursor="pointer"
+          />
+        )}
+      </Flex>
     </Flex>
   );
 }

@@ -47,7 +47,6 @@ import {
   footerHeightBase,
 } from "@components/layout/footer";
 import { ModalAddDish } from "@components/modals/add-dish";
-import { SelectAsyncRestaurant } from "@components/select/async-select-restaurant";
 import { AiOutlineShop } from "react-icons/ai";
 import { SelectAsyncRestaurantBasic } from "@components/select/async-select-restaurant-basic";
 import { RestaurantGoTo } from "@components/select/restaurant-go-to";

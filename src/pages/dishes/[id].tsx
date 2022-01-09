@@ -44,8 +44,7 @@ import { useMutation } from "react-query";
 import { useHotkeys } from "react-hotkeys-hook";
 import { CommentDishComponent } from "@components/edit-components/comment-dish-component";
 import { RatingDishComponent } from "@components/edit-components/rating-dish-component";
-
-const IMAGE_LOCATION = "/images/dishes";
+import { imageLocations } from "@lib/constants";
 
 export default function Dish(props) {
   const isDesktop = useBreakpoint("sm");
@@ -93,7 +92,7 @@ export default function Dish(props) {
                 <Image
                   boxSize={320}
                   fit={"cover"}
-                  src={`${IMAGE_LOCATION}/${dish?.images?.[0]?.fileName}`}
+                  src={`${imageLocations.dishes}/${dish?.images?.[0]?.fileName}`}
                   borderRadius={"md"}
                   boxShadow="4px 4px 0px #000000"
                 />
@@ -127,17 +126,21 @@ export default function Dish(props) {
               <RatingDishComponent dishId={dishId} />
               <CommentDishComponent dishId={dishId} />
             </Stack>
-            <Stack>
+            <Stack flex={1}>
               <Heading>Comments</Heading>
               {dish?.comments.map(({ user, text, updatedAt }) => {
                 // logger.debug(`dishes/[${id}].tsx:user`, user);
                 return (
                   <Stack>
-                    <HStack justify="space-between">
+                    <HStack>
+                      <Avatar src={user.image} size="xs" />
                       <Heading fontWeight="light" size="md">
-                        @{user.username}
+                        {user.username
+                          ? "@" + user.username
+                          : user.name}
                       </Heading>
-                      <Text fontWeight="light">
+                      <Text>-</Text>
+                      <Text fontWeight="light" size="xs">
                         {format(new Date(updatedAt), "PP")}
                       </Text>
                     </HStack>

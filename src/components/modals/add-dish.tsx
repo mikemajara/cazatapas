@@ -30,7 +30,6 @@ import { IoIosAdd } from "react-icons/io";
 import { useDropzone } from "react-dropzone";
 import { logger } from "@lib/logger";
 import ImageThumbnailComponent from "@components/cards/image-thumbnail";
-import { SelectAsyncRestaurant } from "@components/select/async-select-restaurant";
 import { AiOutlineShop } from "react-icons/ai";
 import { SelectAsyncRestaurantBasic } from "@components/select/async-select-restaurant-basic";
 import { useForm } from "react-hook-form";
@@ -42,6 +41,7 @@ import { useShallowRouteChange } from "@hooks/use-shallow-route-change";
 import { useSession } from "next-auth/react";
 import { toast } from "@lib/toast";
 import { MarkdownComponent } from "@components/markdown-component";
+import DropzoneComponent from "@components/dropzone-component";
 
 export const ModalAddDish = (props) => {
   const {
@@ -49,7 +49,7 @@ export const ModalAddDish = (props) => {
     onOpen: onOpenModal,
     onClose: onCloseModal,
   } = useDisclosure();
-  const { status } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
 
   const [setKeyAddDish, unsetKeyAddDish] =
@@ -79,97 +79,43 @@ export const ModalAddDish = (props) => {
     handleSubmit,
     register,
     control,
-    setValue,
-    getValues,
     reset,
-    resetField,
-    unregister,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm();
 
-  // dropzone
   const [files, setFiles] = useState<File[]>([]);
-
-  const { acceptedFiles, getRootProps, getInputProps } = useDropzone({
-    accept: "image/*",
-    onDrop: (acceptedFiles) => {
-      logger.debug("add-dish.tsx:acceptedFiles", acceptedFiles);
-      const newFiles = [
-        ...files,
-        ...acceptedFiles.map((file) =>
-          Object.assign(file, { preview: URL.createObjectURL(file) }),
-        ),
-      ];
-      setFiles(newFiles);
-      // setIsModified(isModified || newFiles.length > 0);
-    },
-  });
-  const handleLocalImageDelete = (name: string) => {
-    const newFiles = files.filter((e) => e.name !== name);
-    setFiles(newFiles);
-  };
-  const thumbs = files.map((file) => {
-    return (
-      <ImageThumbnailComponent
-        isNew
-        key={file.name}
-        fileName={file.name}
-        fileSrc={file.preview}
-        handleImageDelete={() => handleLocalImageDelete(file.name)}
-      />
-    );
-  });
-
-  // submit
-  const fileUpload = async (file) => {
-    const url = "/api/dishes/upload";
-    const formData = new FormData();
-    formData.append("file", file);
-    const config = {
-      headers: {
-        "content-type": "multipart/form-data",
-      },
-    };
-    return await ky.post(url, { body: formData }).json();
-  };
 
   async function onSubmit(values) {
     logger.debug("onSubmit:values", values);
-    let linkedImages = [];
+    let linkedImages = files.map((e: any) => ({ fileName: e.key }));
     try {
-      for (const file of files) {
-        const { files: uploadedFiles } = await fileUpload(file);
-        logger.debug(
-          "add-restaurant.tsx:onSubmit:uploadedFiles",
-          uploadedFiles,
-        );
-        linkedImages.push(uploadedFiles.file.newFilename);
-      }
       await ky.post(`/api/dishes`, {
         json: {
           ..._.omit(values, [
             "restaurant",
-            "comments",
+            "comment",
             "dish",
             "tags",
+            "rating",
           ]),
           restaurant: {
-            connect: {
-              id: values.restaurant.id,
+            connect: { id: values.restaurant.id },
+          },
+          ratings: {
+            create: {
+              value: values.rating,
+              user: { connect: { email: session.user?.email } },
             },
           },
           comments: {
             create: {
               text: values.comment,
-              user: { connect: { email: "alice@rateplate.io" } },
+              user: { connect: { email: session.user?.email } },
             },
           },
-          images: {
-            create: linkedImages.map((e) => ({ fileName: e })),
-          },
-          tags: {
-            connect: values.tags.map((e) => _.pick(e, "id")),
-          },
+          images: { create: linkedImages },
+          tags: { connect: values.tags.map((e) => _.pick(e, "id")) },
         },
       });
       onClose();
@@ -236,30 +182,23 @@ export const ModalAddDish = (props) => {
                   />
                   <FormHelperText>Give it some tags.</FormHelperText>
                 </FormControl>
-                <Stack>
-                  <FormLabel>Images</FormLabel>
-                  <SimpleGrid columns={3} justifyItems="center">
-                    {thumbs}
-                    <Flex
-                      mt={5}
-                      justifyContent="center"
-                      alignItems="center"
-                      boxSize="100px"
-                      bgColor="gray.200"
-                      borderRadius="md"
-                      fontSize="38px"
-                      cursor="pointer"
-                      {...getRootProps()}
-                    >
-                      <input {...getInputProps()} />
-                      <Icon color="gray.500" as={IoIosAdd} />
-                    </Flex>
-                  </SimpleGrid>
-                </Stack>
+                <DropzoneComponent
+                  files={files}
+                  setFiles={setFiles}
+                  directory="dishes"
+                />
                 <Divider py={3} />
                 <FormControl>
                   <FormLabel htmlFor="rating">Your rating</FormLabel>
-                  <RatingComponent isEditable />
+                  <input
+                    type="number"
+                    hidden
+                    {...register("rating")}
+                  />
+                  <RatingComponent
+                    isEditable
+                    onClick={(value) => setValue("rating", value)}
+                  />
 
                   <FormHelperText>
                     Give your dish some stars, or none if it does not
@@ -270,7 +209,7 @@ export const ModalAddDish = (props) => {
                   <FormLabel htmlFor="comment">
                     Your comments
                   </FormLabel>
-                  <Textarea {...register("comments")} />
+                  <Textarea {...register("comment")} />
                   <FormHelperText>Explain your rating</FormHelperText>
                 </FormControl>
               </Stack>

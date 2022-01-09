@@ -15,14 +15,14 @@ import { Main } from "../components/main";
 import { DarkModeSwitch } from "../components/dark-mode-switch";
 import { CTA } from "../components/cta";
 import React from "react";
-import { MainPageLayout } from "../components/layout";
+import { Layout } from "../components/layout";
 import CardWithIllustration from "./subscribe";
 import ProductAddToCart from "../components/cards/offer-card";
 import { getSession } from "next-auth/react";
 import { getSessionHandler } from "../../lib/get-session-handler";
 
 const Index = (props: any) => (
-  <MainPageLayout>
+  <Layout>
     <Grid
       w="full"
       h="full"
@@ -37,7 +37,7 @@ const Index = (props: any) => (
           </Box>
         ))}
     </Grid>
-  </MainPageLayout>
+  </Layout>
 );
 
 export default Index;

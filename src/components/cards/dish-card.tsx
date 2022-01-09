@@ -12,10 +12,9 @@ import NextLink from "next/link";
 import { Dish, DishInclude } from "prisma/model";
 import _ from "lodash";
 import { logger } from "@lib/logger";
+import { imageLocations } from "@lib/constants";
 
-const IMAGE_LOCATION = "/images/dishes";
-
-export const DishCard = (props: DishInclude) => {
+export const DishCard = (props: any) => {
   const { id, name, ratings, tags, images } = props;
   const averageRating = _.mean(ratings?.map((r) => r.value));
 
@@ -27,7 +26,7 @@ export const DishCard = (props: DishInclude) => {
             as={Image}
             boxSize={220}
             fit={"cover"}
-            src={`${IMAGE_LOCATION}/${images?.[0]?.fileName}`}
+            src={`${imageLocations.dishes}/${images?.[0]?.fileName}`}
             borderRadius={"md"}
             border=".25px solid"
             borderColor="gray.900"
