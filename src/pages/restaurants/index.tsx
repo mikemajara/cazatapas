@@ -28,7 +28,7 @@ export default function Dishes() {
     base: false,
     md: true,
   });
-  const IconComponent = buttonExpanded ? IconButton : Button;
+  const IconComponent = buttonExpanded ? Button : IconButton;
   const {
     data: restaurants,
     isLoading,
