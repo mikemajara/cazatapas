@@ -119,6 +119,7 @@ export const ModalAddRestaurant = (props) => {
                 <DropzoneComponent
                   files={files}
                   setFiles={setFiles}
+                  directory="restaurants"
                 />
               </Stack>
             </ModalBody>

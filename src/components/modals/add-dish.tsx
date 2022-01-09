@@ -178,6 +178,7 @@ export const ModalAddDish = (props) => {
                 <DropzoneComponent
                   files={files}
                   setFiles={setFiles}
+                  directory="dishes"
                 />
                 <Divider py={3} />
                 <FormControl>

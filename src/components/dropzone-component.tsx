@@ -17,8 +17,7 @@ import ImageThumbnailComponent from "./cards/image-thumbnail";
 const TIMEOUT_UPLOAD_SECONDS = 30;
 
 export default function DropzoneComponent(props: any) {
-  const { files, setFiles } = props;
-  // const [files, setFiles] = useState<File[]>([]);
+  const { files, setFiles, directory } = props;
 
   useEffect(() => {
     // cleanup
@@ -47,7 +46,7 @@ export default function DropzoneComponent(props: any) {
     const formData = new FormData();
     formData.append("file", file);
     const response = await ky
-      .post("/api/restaurants/upload", {
+      .post(`/api/${directory}/upload`, {
         body: formData,
         timeout: 1000 * TIMEOUT_UPLOAD_SECONDS,
       })

@@ -53,7 +53,7 @@ export const useDishComment = (dishId) => {
       refetchOnWindowFocus: false,
       enabled: !!dishId,
       retry: (failureCount, error) => {
-        if (error.response.status === 401 || failureCount > 3)
+        if (error?.response?.status === 401 || failureCount > 3)
           return false;
         return true;
       },

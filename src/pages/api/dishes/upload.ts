@@ -7,8 +7,12 @@ import {
   getEmailAndApiKeyFromHeader,
   isUserAuthorizedWithApiKey,
 } from "@lib/auth/api-key";
-
-import formidable from "formidable";
+import path from "path";
+import nextConnect from "next-connect";
+import S3 from "aws-sdk/clients/s3";
+import multer from "multer";
+import multerS3 from "multer-s3";
+import { pseudoRandomBytes } from "crypto";
 
 export const config = {
   api: {
@@ -16,39 +20,52 @@ export const config = {
   },
 };
 
-export default async function handle(
-  req: NextApiRequest,
-  res: NextApiResponse,
-) {
-  // authorization
-  // const session = await getSession({ req });
-  // if (!session) {
-  //   const isAuthorized = await isUserAuthorizedWithApiKey(req);
-  //   if (!isAuthorized) {
-  //     res.status(401).end();
-  //   }
-  // }
-  if (req.method === "POST") {
-    await handlePOST(req, res);
-  } else {
+const s3Client = new S3({
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_KEY,
+  },
+});
+
+const getFileName = (req, file, cb) =>
+  pseudoRandomBytes(16, function (err, raw) {
+    cb(
+      null,
+      raw.toString("hex") +
+        Date.now() +
+        path.extname(file.originalname),
+    );
+  });
+
+const upload = multer({
+  storage: multerS3({
+    s3: s3Client,
+    bucket: "cazatapa/dishes",
+    acl: "public-read",
+    filename: getFileName,
+    key: getFileName,
+  }),
+});
+
+const apiRoute = nextConnect<NextApiRequest, NextApiResponse>({
+  onError(error, req, res) {
+    res
+      .status(501)
+      .json({ error: `Sorry something Happened! ${error.message}` });
+  },
+  onNoMatch(req, res) {
     res
       .status(405)
-      .end(
-        `The HTTP ${req.method} method is not supported at this route.`,
-      );
-  }
-}
+      .json({ error: `Method '${req.method}' Not Allowed` });
+  },
+});
 
-// POST /api/restaurants/:id?
-async function handlePOST(req, res) {
-  const form = new formidable.IncomingForm({
-    uploadDir: "public/images/dishes",
-    keepExtensions: true,
-  });
-  return form.parse(req, (err, fields, files) => {
-    if (err) {
-      return err;
-    }
-    res.status(200).json({ files });
-  });
-}
+apiRoute.use(upload.single("file"));
+
+apiRoute.post((req, res) => {
+  // logger.debug("upload.ts: req.files", req.files);
+  // logger.debug("upload.ts: req.body", req.body);
+  res.status(200).json(req.file);
+});
+
+export default apiRoute;

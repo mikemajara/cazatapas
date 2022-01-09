@@ -34,6 +34,7 @@ export const useRestaurant = (id) => {
     () => ky.get(`/api/restaurants/${id}`).json(),
     {
       onSuccess: (data) => setResult(data),
+      enabled: !!id,
     },
   );
   return { data: result, isLoading, error };
