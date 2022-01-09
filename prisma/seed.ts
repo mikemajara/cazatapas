@@ -2,6 +2,13 @@ import { PrismaClient, Prisma } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
+const INCLUDE_ENTITIES = {
+  users: false,
+  tags: true,
+  dishes: false,
+  restaurants: false,
+};
+
 const userData: Prisma.UserCreateInput[] = [
   {
     name: "Alice",
@@ -177,33 +184,18 @@ const dishData: Prisma.DishCreateInput[] = [
 
 async function main() {
   console.log(`Start seeding ...`);
-  for (const u of userData) {
-    const user = await prisma.user.create({
-      data: u,
-    });
-    console.log(`Created user with id: ${user.id}`);
-  }
 
-  for (const u of tagData) {
-    const tag = await prisma.tag.create({
-      data: u,
-    });
-    console.log(`Created tag with id: ${tag.id}`);
-  }
+  INCLUDE_ENTITIES.users &&
+    (await prisma.user.createMany({ data: userData }));
 
-  for (const u of restaurantData) {
-    const restaurant = await prisma.restaurant.create({
-      data: u,
-    });
-    console.log(`Created restaurant with id: ${restaurant.id}`);
-  }
+  INCLUDE_ENTITIES.tags &&
+    (await prisma.tag.createMany({ data: tagData }));
 
-  for (const u of dishData) {
-    const dish = await prisma.dish.create({
-      data: u,
-    });
-    console.log(`Created dish with id: ${dish.id}`);
-  }
+  INCLUDE_ENTITIES.restaurants &&
+    (await prisma.restaurant.createMany({ data: restaurantData }));
+
+  INCLUDE_ENTITIES.dishes &&
+    (await prisma.dish.createMany({ data: dishData }));
 
   console.log(`Seeding finished.`);
 }
