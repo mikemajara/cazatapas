@@ -19,9 +19,11 @@ import { ModalAddRestaurant } from "@components/modals/add-restaurant";
 import React, { useState } from "react";
 import { useAllRestaurants } from "@hooks/hooks-restaurants";
 import { MagnifyingGlass } from "phosphor-react";
+import { useRouter } from "next/router";
 
 export default function Dishes() {
   const [search, setSearch] = useState("");
+  const router = useRouter();
   const isMobile = useBreakpointValue({ base: true, sm: false });
   const buttonExpanded = useBreakpointValue({
     base: true,
@@ -66,6 +68,7 @@ export default function Dishes() {
               : restaurants.map((e) => <RestaurantCard {...e} />)}
           </SimpleGrid>
           <ModalAddRestaurant
+            isOpen={Boolean(router.query.addRestaurant)}
             button={
               <IconComponent
                 bg="white"
