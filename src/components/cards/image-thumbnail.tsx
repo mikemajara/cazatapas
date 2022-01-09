@@ -39,7 +39,6 @@ export default function ImageThumbnailComponent(props: Props) {
     >
       <Image
         opacity={isLoading && 0.4}
-        mr={5}
         src={fileSrc}
         fallbackSrc="/images/no-image.jpg"
         boxSize="100px"

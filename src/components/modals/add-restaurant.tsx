@@ -31,6 +31,7 @@ import { useShallowRouteChange } from "@hooks/use-shallow-route-change";
 import { toast } from "@lib/toast";
 import { useRouter } from "next/router";
 import _, { indexOf } from "lodash";
+import DropzoneComponent from "@components/dropzone-component";
 
 export const ModalAddRestaurant = (props) => {
   const {
@@ -48,10 +49,10 @@ export const ModalAddRestaurant = (props) => {
   const onClose = () => unsetKeyAddRestaurant(onCloseModal);
 
   useEffect(() => {
-    if (props.isOpen) {
-      onOpenModal();
-    }
+    props.isOpen && onOpenModal();
   }, [props.isOpen]);
+
+  const [files, setFiles] = useState<File[]>([]);
 
   const handleOnOpenModal = () => {
     if (status === "authenticated") {
@@ -65,30 +66,6 @@ export const ModalAddRestaurant = (props) => {
 
   // react-hook-form
   const { handleSubmit, register, reset } = useForm();
-
-  const flagUploadedImages = (uploadedFile) => {
-    setFiles((files) => {
-      for (let i = 0; i < files.length; i++) {
-        if (files[i].name === uploadedFile.originalname) {
-          files[i] = {
-            ...files[i],
-            ...uploadedFile,
-            name: files[i].name,
-            isLoading: false,
-          };
-        }
-      }
-      return [...files];
-    });
-  };
-
-  const filesUpload = async (file: File) => {
-    const url = "/api/restaurants/upload";
-    const formData = new FormData();
-    formData.append("file", file);
-    const response = await ky.post(url, { body: formData }).json();
-    flagUploadedImages(response);
-  };
 
   async function onSubmit(values) {
     logger.debug("onSubmit:values", values);
@@ -110,45 +87,6 @@ export const ModalAddRestaurant = (props) => {
       console.error(error);
     }
   }
-
-  // dropzone
-  const [files, setFiles] = useState<File[]>([]);
-
-  const { getRootProps, getInputProps } = useDropzone({
-    accept: "image/*",
-    onDrop: async (acceptedFiles) => {
-      logger.debug("add-dish.tsx:acceptedFiles", acceptedFiles);
-      const newFiles = [
-        ...files,
-        ...acceptedFiles.map((file) =>
-          Object.assign(file, {
-            preview: URL.createObjectURL(file),
-            isLoading: true,
-          }),
-        ),
-      ];
-      setFiles(newFiles);
-      for (const file of newFiles) {
-        filesUpload(file);
-      }
-    },
-  });
-
-  const handleLocalImageDelete = (name: string) => {
-    setFiles((files) => [...files.filter((e) => e.name !== name)]);
-  };
-
-  const thumbs = files.map((file) => {
-    return (
-      <ImageThumbnailComponent
-        isLoading={file.isLoading}
-        key={file.name}
-        fileName={file.name}
-        fileSrc={file.preview}
-        handleImageDelete={() => handleLocalImageDelete(file.name)}
-      />
-    );
-  });
 
   return (
     <>
@@ -178,26 +116,10 @@ export const ModalAddRestaurant = (props) => {
                   </FormHelperText>
                 </FormControl>
                 {/* <Box>UploadedFiles: {uploadedFiles.length}</Box> */}
-                <Stack>
-                  <FormLabel>Images</FormLabel>
-                  <SimpleGrid columns={3} justifyItems="center">
-                    {thumbs}
-                    <Flex
-                      mt={5}
-                      justifyContent="center"
-                      alignItems="center"
-                      boxSize="100px"
-                      bgColor="gray.200"
-                      borderRadius="md"
-                      fontSize="38px"
-                      cursor="pointer"
-                      {...getRootProps()}
-                    >
-                      <input {...getInputProps()} />
-                      <Icon color="gray.500" as={IoIosAdd} />
-                    </Flex>
-                  </SimpleGrid>
-                </Stack>
+                <DropzoneComponent
+                  files={files}
+                  setFiles={setFiles}
+                />
               </Stack>
             </ModalBody>
 
