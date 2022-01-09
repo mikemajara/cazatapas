@@ -24,10 +24,9 @@ import { useRouter } from "next/router";
 export default function Dishes() {
   const [search, setSearch] = useState("");
   const router = useRouter();
-  const isMobile = useBreakpointValue({ base: true, sm: false });
   const buttonExpanded = useBreakpointValue({
-    base: true,
-    md: false,
+    base: false,
+    md: true,
   });
   const IconComponent = buttonExpanded ? IconButton : Button;
   const {
@@ -74,17 +73,15 @@ export default function Dishes() {
                 bg="white"
                 aria-label="add"
                 position="fixed"
-                bottom={{ base: 10, md: 40 }}
+                bottom={buttonExpanded ? 40 : 10}
                 right={["5", "10"]}
                 variant="outline"
                 border="1px solid"
                 borderColor="black"
-                icon={buttonExpanded && <AddIcon fontSize="xs" />}
-                leftIcon={
-                  !buttonExpanded && <AddIcon fontSize="xs" />
-                }
+                icon={!buttonExpanded && <AddIcon fontSize="xs" />}
+                leftIcon={buttonExpanded && <AddIcon fontSize="xs" />}
                 style={{ boxShadow: "4px 4px 0px #000000" }}
-                children={!buttonExpanded && "Add restaurant"}
+                children={buttonExpanded && "Add restaurant"}
               />
             }
           />
