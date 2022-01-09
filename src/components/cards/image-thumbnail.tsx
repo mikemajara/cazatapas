@@ -46,7 +46,7 @@ export default function ImageThumbnailComponent(props: Props) {
         objectFit="cover"
       />
       <Flex
-        w="92%"
+        w="112%"
         position="absolute"
         flexDirection="row"
         justifyContent="space-between"
@@ -73,7 +73,10 @@ export default function ImageThumbnailComponent(props: Props) {
           <Icon
             as={GrFormClose}
             bg="gray.300"
+            fontSize="lg"
             borderRadius="2xl"
+            border="1px solid"
+            borderColor="gray.600"
             onClick={() => handleImageDelete()}
             cursor="pointer"
           />
