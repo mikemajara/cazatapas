@@ -9,11 +9,11 @@ import {
   useColorModeValue,
   createIcon,
 } from "@chakra-ui/react";
-import { MainPageLayout } from "../components/layout";
+import { Layout } from "../components/layout";
 
 export default function CardWithIllustration() {
   return (
-    <MainPageLayout>
+    <Layout>
       <Flex
         minH={"100vh"}
         align={"center"}
@@ -72,7 +72,7 @@ export default function CardWithIllustration() {
           </Stack>
         </Stack>
       </Flex>
-    </MainPageLayout>
+    </Layout>
   );
 }
 

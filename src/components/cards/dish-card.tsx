@@ -14,7 +14,7 @@ import _ from "lodash";
 import { logger } from "@lib/logger";
 import { imageLocations } from "@lib/constants";
 
-export const DishCard = (props: DishInclude) => {
+export const DishCard = (props: any) => {
   const { id, name, ratings, tags, images } = props;
   const averageRating = _.mean(ratings?.map((r) => r.value));
 

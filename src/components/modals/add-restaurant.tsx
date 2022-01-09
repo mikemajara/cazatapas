@@ -69,7 +69,7 @@ export const ModalAddRestaurant = (props) => {
 
   async function onSubmit(values) {
     logger.debug("onSubmit:values", values);
-    let linkedImages = files.map((e) => ({
+    let linkedImages = files.map((e: any) => ({
       fileName: e.key,
     }));
     try {

@@ -22,8 +22,8 @@ export const config = {
 
 const s3Client = new S3({
   credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_KEY,
+    accessKeyId: process.env.AMAZON_AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AMAZON_AWS_SECRET_KEY,
   },
 });
 
@@ -62,7 +62,7 @@ const apiRoute = nextConnect<NextApiRequest, NextApiResponse>({
 
 apiRoute.use(upload.single("file"));
 
-apiRoute.post((req, res) => {
+apiRoute.post((req: NextApiRequest & { file: any }, res) => {
   // logger.debug("upload.ts: req.files", req.files);
   // logger.debug("upload.ts: req.body", req.body);
   res.status(200).json(req.file);

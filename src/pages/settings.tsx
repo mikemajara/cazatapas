@@ -19,7 +19,7 @@ import {
   ToastOptions,
   ToastPositionWithLogical,
 } from "@chakra-ui/react";
-import { MainPageLayout } from "../components/layout";
+import { Layout } from "../components/layout";
 import { getSession, signIn, useSession } from "next-auth/react";
 import ProtectedComponent from "../components/auth/protected-component";
 import { logger } from "@lib/logger";
@@ -125,7 +125,7 @@ export default function Settings({ session }) {
 
   return (
     <ProtectedComponent session={session}>
-      <MainPageLayout>
+      <Layout>
         <Container p={10} maxW="container.md">
           <form onSubmit={handleSubmit(onSubmit)}>
             <Stack spacing={8}>
@@ -274,7 +274,7 @@ export default function Settings({ session }) {
             </Stack>
           </form>
         </Container>
-      </MainPageLayout>
+      </Layout>
     </ProtectedComponent>
   );
 }
