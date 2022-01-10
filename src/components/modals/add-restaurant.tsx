@@ -93,12 +93,7 @@ export const ModalAddRestaurant = (props) => {
       {React.cloneElement(props.button, {
         onClick: handleOnOpenModal,
       })}
-      <Modal
-        isOpen={isOpen}
-        onClose={onClose}
-        // isCentered
-        scrollBehavior="inside"
-      >
+      <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <form onSubmit={handleSubmit(onSubmit)}>
           <ModalContent>
