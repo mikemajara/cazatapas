@@ -1,5 +1,15 @@
 # rateplate
 
+App to rate plates and dishes.
+
+Features:
+* Decoupled CRUD with [NextJS API](https://nextjs.org/docs/api-routes/introduction)
+* [backend](backend/docker-compose.yml) with docker
+* [Prisma](https://www.prisma.io/)
+* File dropzone - [react-dropzone](https://react-dropzone.js.org/)
+* Select Dropdown - [react-select](https://react-select.com/home) (custom & default async)
+* 
+
 # install & run
 
 **Clone repo**
