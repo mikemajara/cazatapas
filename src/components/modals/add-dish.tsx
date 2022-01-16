@@ -102,20 +102,26 @@ export const ModalAddDish = (props) => {
           restaurant: {
             connect: { id: values.restaurant.id },
           },
-          ratings: {
-            create: {
-              value: values.rating,
-              user: { connect: { email: session.user?.email } },
-            },
-          },
-          comments: {
-            create: {
-              text: values.comment,
-              user: { connect: { email: session.user?.email } },
-            },
-          },
+          ratings: values.rating
+            ? {
+                create: {
+                  value: values.rating,
+                  user: { connect: { email: session.user?.email } },
+                },
+              }
+            : {},
+          comments: values.comment
+            ? {
+                create: {
+                  text: values.comment,
+                  user: { connect: { email: session.user?.email } },
+                },
+              }
+            : {},
           images: { create: linkedImages },
-          tags: { connect: values.tags.map((e) => _.pick(e, "id")) },
+          tags: values.tags
+            ? { connect: values.tags.map((e) => _.pick(e, "id")) }
+            : {},
         },
       });
       onClose();
